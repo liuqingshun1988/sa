@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>食安链 · 食品安全公示平台</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--green:#0A7C59;--green2:#0F9B6E;--gl:#E3F5EE;--gm:#C0E8D8;--blue:#1A56A0;--bl:#E8F0FB;--amber:#B45309;--al:#FEF3C7;--red:#C0392B;--rl:#FEECEB;--g0:#F7F8FA;--g1:#F0F2F5;--g2:#E4E7ED;--g3:#C8CDD6;--g4:#9098A9;--g5:#6B7385;--g6:#3D4456;--g7:#1A1F2E;--font:'Noto Sans SC',sans-serif;--r:8px;--r2:12px;--r3:16px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);color:var(--g7);background:var(--g0);font-size:14px;min-height:100vh}
+.app{display:flex;flex-direction:column;min-height:100vh}
+.sc{display:none;flex:1;flex-direction:column}.sc.on{display:flex}
+.portal{min-height:100vh;background:linear-gradient(160deg,#0A7C59,#0d5c43 40%,#091e14);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;overflow:hidden}
+.plogo{display:flex;align-items:center;gap:12px;margin-bottom:44px}
+.plogo-ic{width:52px;height:52px;background:rgba(255,255,255,.14);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;border:1px solid rgba(255,255,255,.2)}
+.plogo h1{font-size:26px;font-weight:700;color:#fff;letter-spacing:1px}.plogo p{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px}
+.pcards{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:460px;margin-bottom:28px}
+.pcard{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:var(--r2);padding:18px 16px;cursor:pointer;transition:all .2s;backdrop-filter:blur(10px)}
+.pcard:hover{background:rgba(255,255,255,.15);transform:translateY(-2px)}
+.pc-ic{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:21px;margin-bottom:10px}
+.pcard h3{font-size:14px;font-weight:600;color:#fff;margin-bottom:3px}.pcard p{font-size:11px;color:rgba(255,255,255,.55);line-height:1.5}
+.pc-op .pc-ic{background:rgba(255,193,7,.2);color:#FFC107}.pc-mfr .pc-ic{background:rgba(52,152,219,.2);color:#5DADE2}
+.pc-mer .pc-ic{background:rgba(46,204,113,.2);color:#58D68D}.pc-pub .pc-ic{background:rgba(255,118,118,.2);color:#FF7676}
+.ptag{color:rgba(255,255,255,.35);font-size:11px}
+.tb{height:52px;background:#fff;border-bottom:1px solid var(--g2);display:flex;align-items:center;padding:0 14px;gap:8px;position:sticky;top:0;z-index:50;flex-shrink:0}
+.tb-bk{width:32px;height:32px;border-radius:8px;border:1px solid var(--g2);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--g4);flex-shrink:0}
+.tb-bk:hover{background:var(--g1)}.tb-logo{font-weight:700;font-size:15px;color:var(--green);display:flex;align-items:center;gap:6px}
+.tb-role{font-size:11px;color:var(--g4);background:var(--g1);padding:3px 10px;border-radius:20px;border:1px solid var(--g2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tb-sp{flex:1}
+.itabs{display:flex;background:#fff;border-bottom:1px solid var(--g2);padding:0 14px;overflow-x:auto;flex-shrink:0;position:sticky;top:52px;z-index:40}
+.itab{padding:11px 12px;font-size:13px;color:var(--g4);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-weight:500;flex-shrink:0}
+.itab.on{color:var(--green);border-bottom-color:var(--green)}
+.cnt{flex:1;padding:14px;overflow-y:auto;max-width:640px;width:100%;margin:0 auto}
+.pane{display:none}.pane.on{display:block}
+.card{background:#fff;border:1px solid var(--g2);border-radius:var(--r2);padding:14px 16px;margin-bottom:10px}
+.ct{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ct i{color:var(--green);font-size:17px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.scard{background:#fff;border:1px solid var(--g2);border-radius:var(--r2);padding:10px;text-align:center}
+.sn{font-size:20px;font-weight:700}.sl{font-size:11px;color:var(--g4);margin-top:2px}
+.li{background:#fff;border:1px solid var(--g2);border-radius:var(--r2);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.li:hover{border-color:var(--green);background:var(--gl)}
+.li-t{font-weight:600;font-size:14px;margin-bottom:3px}.li-s{font-size:12px;color:var(--g4);line-height:1.7}
+.b{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 7px;border-radius:20px;font-weight:500}
+.b-ok{background:var(--gl);color:var(--green)}.b-w{background:var(--al);color:var(--amber)}
+.b-e{background:var(--rl);color:var(--red)}.b-i{background:var(--bl);color:var(--blue)}
+.b-g{background:var(--g1);color:var(--g5);border:1px solid var(--g2)}.b-s{background:#F3E8FF;color:#7C3AED}
+.btn{padding:8px 14px;border-radius:var(--r);border:1px solid var(--g2);background:#fff;color:var(--g6);cursor:pointer;font-size:13px;font-family:var(--font);display:inline-flex;align-items:center;gap:5px;font-weight:500;transition:all .15s}
+.btn:hover{background:var(--g1)}.btn-p{background:var(--green);color:#fff;border-color:var(--green)}.btn-p:hover{background:var(--green2)}
+.btn-sm{padding:4px 10px;font-size:12px}.btn-bl{width:100%;justify-content:center;margin-bottom:10px}
+.btn-d{color:var(--red);border-color:#FECACA}.btn-d:hover{background:var(--rl)}
+.fi{margin-bottom:12px}.fi label{display:block;font-size:12px;font-weight:600;color:var(--g5);margin-bottom:4px}
+.fi input,.fi select,.fi textarea{width:100%;padding:8px 11px;border:1px solid var(--g2);border-radius:var(--r);background:#fff;color:var(--g7);font-size:13px;font-family:var(--font)}
+.fi input:focus,.fi select:focus{outline:none;border-color:var(--green)}
+.fi input[type=password]{letter-spacing:2px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.uz{border:1.5px dashed var(--g3);border-radius:var(--r);padding:14px;text-align:center;cursor:pointer;color:var(--g4);font-size:12px;transition:all .15s}
+.uz:hover{border-color:var(--green);background:var(--gl);color:var(--green)}.uz i{font-size:22px;margin-bottom:4px;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:20px;font-size:12px;background:var(--g1);border:1px solid var(--g2);cursor:pointer;transition:all .15s}
+.chip:hover{background:var(--gl);border-color:var(--gm);color:var(--green)}
+.c-ok{background:var(--gl);border-color:var(--gm);color:var(--green)}.c-ms{background:var(--al);border-color:#FCD34D;color:var(--amber)}
+.mo{position:fixed;inset:0;background:rgba(10,20,15,.5);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;backdrop-filter:blur(4px)}
+.mo.h{display:none}.modal{background:#fff;border-radius:var(--r3);width:100%;max-width:520px;padding:20px;margin:auto;box-shadow:0 4px 24px rgba(0,0,0,.12)}
+.mt{font-size:16px;font-weight:700;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--g2)}
+.mf{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:10px;border-top:1px solid var(--g2)}
+.al{padding:9px 12px;border-radius:var(--r);font-size:12px;margin-bottom:12px;display:flex;gap:7px;align-items:flex-start;line-height:1.5}
+.al i{font-size:14px;flex-shrink:0;margin-top:1px}
+.al-i{background:var(--bl);color:var(--blue)}.al-o{background:var(--gl);color:var(--green)}.al-w{background:var(--al);color:var(--amber)}
+.shd{font-size:11px;font-weight:700;color:var(--g4);letter-spacing:.7px;text-transform:uppercase;margin:14px 0 7px}
+.sopt{padding:9px 12px;border:1px solid var(--g2);border-radius:var(--r);cursor:pointer;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;transition:all .15s}
+.sopt:hover,.sopt.sel{border-color:var(--green);background:var(--gl)}
+.sl-pre{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.sl-b{padding:5px 12px;border-radius:var(--r);border:1px solid var(--g2);background:#fff;cursor:pointer;font-size:12px;font-family:var(--font);transition:all .15s}
+.sl-b:hover,.sl-b.on{background:var(--green);color:#fff;border-color:var(--green)}
+.empty{text-align:center;padding:36px 20px;color:var(--g4)}.empty i{font-size:38px;display:block;margin-bottom:8px;color:var(--g3)}
+.av{width:34px;height:34px;border-radius:50%;background:var(--gl);color:var(--green);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.sb{position:relative;margin-bottom:12px}.sb input{padding-left:34px}
+.sb i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--g4);font-size:16px;pointer-events:none}
+.tg-w{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.tg{position:relative;width:42px;height:24px;flex-shrink:0}.tg input{opacity:0;width:0;height:0}
+.tg-sl{position:absolute;inset:0;background:var(--g3);border-radius:12px;cursor:pointer;transition:.2s}
+.tg-sl:before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+.tg input:checked+.tg-sl{background:var(--green)}.tg input:checked+.tg-sl:before{transform:translateX(18px)}
+/* LOGIN */
+.lw{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:30px 20px;background:var(--g0)}
+.lcard{background:#fff;border:1px solid var(--g2);border-radius:var(--r3);padding:28px 24px;width:100%;max-width:400px}
+.l-tabs{display:flex;border:1px solid var(--g2);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.l-tab{flex:1;padding:8px;font-size:12px;text-align:center;cursor:pointer;color:var(--g5);border:none;background:#fff;font-family:var(--font);transition:all .15s}
+.l-tab.on{background:var(--green);color:#fff;font-weight:600}
+.l-div{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--g3);font-size:12px}
+.l-div::before,.l-div::after{content:'';flex:1;height:1px;background:var(--g2)}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:40px}
+.pw-eye{position:absolute;right:11px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--g4);font-size:16px;background:none;border:none;padding:0}
+.pw-eye:hover{color:var(--green)}
+.l-tip{font-size:11px;color:var(--g4);margin-top:4px}
+/* PUBLIC */
+.pub-h{background:linear-gradient(135deg,var(--green),#0d5c43);color:#fff;padding:26px 18px 22px;text-align:center}
+.pub-h h1{font-size:22px;font-weight:700;margin-bottom:4px}.pub-h p{font-size:12px;opacity:.72}
+.pub-trust{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.2);padding:4px 12px;border-radius:20px;font-size:12px;margin-top:10px}
+.pub-sec{background:#fff;margin:10px 12px;border-radius:var(--r2);border:1px solid var(--g2);overflow:hidden}
+.pub-st{padding:11px 14px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;background:var(--g0);border-bottom:1px solid var(--g2)}
+.pub-r{padding:10px 14px;border-bottom:1px solid var(--g2);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.pub-r:last-child{border-bottom:none}.pub-rl{color:var(--g5);flex-shrink:0;margin-right:8px}
+.rcc{padding:13px 14px;border-bottom:1px solid var(--g2)}.rcc:last-child{border-bottom:none}
+.rcc-t{font-weight:600;font-size:14px;margin-bottom:6px}
+.mon{border:2px dashed var(--g3);border-radius:var(--r2);padding:36px 20px;text-align:center;color:var(--g4)}
+.mon i{font-size:44px;display:block;margin-bottom:10px;color:var(--g3)}
+/* BULK */
+.bk-it{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--g2);border-radius:var(--r);margin-bottom:8px}
+.bk-in{flex:1;min-width:0}.bk-n{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bk-s{font-size:11px;color:var(--g4);margin-top:2px}
+.bk-bar{height:3px;background:var(--g2);border-radius:2px;margin-top:6px}
+.bk-prog{height:100%;background:var(--green);border-radius:2px;transition:width .3s}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- 门户 -->
+<div class="sc on" id="sc-portal">
+<div class="portal">
+  <div class="plogo"><div class="plogo-ic"><i class="ti ti-shield-check"></i></div><div><h1>食安链</h1><p>FOOD SAFETY CHAIN PLATFORM</p></div></div>
+  <div class="pcards">
+    <div class="pcard pc-op" onclick="go('op')"><div class="pc-ic"><i class="ti ti-layout-dashboard"></i></div><h3>营运管理</h3><p>商场营运方，管理全部商户食安状态</p></div>
+    <div class="pcard pc-mfr" onclick="go('mfr-l')"><div class="pc-ic"><i class="ti ti-building-factory-2"></i></div><h3>生产厂家</h3><p>注册厂家，批量上传检测报告</p></div>
+    <div class="pcard pc-mer" onclick="go('mer-l')"><div class="pc-ic"><i class="ti ti-building-store"></i></div><h3>商户端</h3><p>注册登录，管理进货台账及公示资料</p></div>
+    <div class="pcard pc-pub" onclick="go('pub-sel')"><div class="pc-ic"><i class="ti ti-qrcode"></i></div><h3>扫码公示</h3><p>顾客扫码查看食品安全信息</p></div>
+  </div>
+  <div class="ptag">泰安爱琴海购物公园 · 食品安全智慧管理平台</div>
+</div>
+</div>
+
+<!-- 营运端 -->
+<div class="sc" id="sc-op">
+  <div class="tb"><div class="tb-bk" onclick="go('portal')"><i class="ti ti-arrow-left"></i></div><div class="tb-logo"><i class="ti ti-shield-check"></i>食安链</div><div class="tb-role">营运管理</div><div class="tb-sp"></div><button class="btn btn-sm btn-p" onclick="om('m-addm')"><i class="ti ti-plus"></i>添加商户</button></div>
+  <div class="itabs"><div class="itab on" id="ot-o" onclick="opT('o')">总览</div><div class="itab" id="ot-m" onclick="opT('m')">商户</div><div class="itab" id="ot-f" onclick="opT('f')">厂家</div></div>
+  <div class="cnt">
+    <div class="pane on" id="op-o"></div>
+    <div class="pane" id="op-m"><div class="sb"><i class="ti ti-search"></i><input id="op-q" placeholder="搜索商户名称或编号…" oninput="rOpM()"></div><div id="op-ml"></div></div>
+    <div class="pane" id="op-f"><div id="op-fl"></div></div>
+  </div>
+</div>
+
+<!-- 厂家登录 -->
+<div class="sc" id="sc-mfr-l">
+  <div class="tb"><div class="tb-bk" onclick="go('portal')"><i class="ti ti-arrow-left"></i></div><div class="tb-logo"><i class="ti ti-shield-check"></i>食安链</div><div class="tb-role">厂家端</div></div>
+  <div class="lw"><div class="lcard">
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px">厂家登录 / 注册</div>
+    <div style="font-size:13px;color:var(--g4);margin-bottom:18px">上传一次资质，全平台商户直接调用</div>
+    <div id="mfr-ll"></div>
+    <div class="l-div">或</div>
+    <button class="btn btn-p btn-bl" onclick="om('m-regf')"><i class="ti ti-plus"></i>注册新厂家</button>
+  </div></div>
+</div>
+
+<!-- 厂家主页 -->
+<div class="sc" id="sc-mfr">
+  <div class="tb"><div class="tb-bk" onclick="go('mfr-l')"><i class="ti ti-arrow-left"></i></div><div class="tb-logo"><i class="ti ti-shield-check"></i>食安链</div><div class="tb-role" id="f-role">厂家端</div><div class="tb-sp"></div><button class="btn btn-sm btn-p" onclick="om('m-bulk')"><i class="ti ti-files"></i>批量上传</button></div>
+  <div class="itabs"><div class="itab on" id="ft-r" onclick="fT('r')">检测报告</div><div class="itab" id="ft-p" onclick="fT('p')">厂家资质</div></div>
+  <div class="cnt">
+    <div class="pane on" id="f-r"><button class="btn btn-p btn-bl" onclick="om('m-addr')"><i class="ti ti-file-plus"></i>上传单份报告</button><div id="f-rl"></div></div>
+    <div class="pane" id="f-p"><div id="f-pc"></div></div>
+  </div>
+</div>
+
+<!-- 商户登录 -->
+<div class="sc" id="sc-mer-l">
+  <div class="tb"><div class="tb-bk" onclick="go('portal')"><i class="ti ti-arrow-left"></i></div><div class="tb-logo"><i class="ti ti-shield-check"></i>食安链</div><div class="tb-role">商户端</div></div>
+  <div class="lw"><div class="lcard">
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px">商户登录</div>
+    <div style="font-size:13px;color:var(--g4);margin-bottom:16px">支持手机号或营业执照名称登录</div>
+    <div class="l-tabs">
+      <button class="l-tab on" onclick="setLM('phone')">手机号</button>
+      <button class="l-tab" onclick="setLM('name')">营业执照名</button>
+    </div>
+    <div class="fi"><label id="l-lbl">手机号</label><input id="l-inp" placeholder="请输入注册手机号" type="tel" maxlength="11"></div>
+    <div class="fi">
+      <label>密码</label>
+      <div class="pw-wrap">
+        <input id="l-pw" type="password" placeholder="请输入密码">
+        <button class="pw-eye" onclick="togglePw('l-pw',this)" tabindex="-1"><i class="ti ti-eye"></i></button>
+      </div>
+    </div>
+    <button class="btn btn-p btn-bl" onclick="doLgn()"><i class="ti ti-login"></i>登录</button>
+    <div id="l-msg" style="font-size:12px;color:var(--red);margin-top:6px;display:none;text-align:center"></div>
+    <div class="l-div">没有账号？</div>
+    <button class="btn btn-bl" onclick="om('m-regm')"><i class="ti ti-user-plus"></i>注册新商户</button>
+  </div></div>
+</div>
+
+<!-- 商户主页 -->
+<div class="sc" id="sc-mer">
+  <div class="tb"><div class="tb-bk" onclick="go('mer-l')"><i class="ti ti-arrow-left"></i></div><div class="tb-logo"><i class="ti ti-shield-check"></i>食安链</div><div class="tb-role" id="m-role">商户端</div><div class="tb-sp"></div></div>
+  <div class="itabs">
+    <div class="itab on" id="mt-rc" onclick="mT('rc')">进货台账</div>
+    <div class="itab" id="mt-sl" onclick="mT('sl')">店铺资质</div>
+    <div class="itab" id="mt-su" onclick="mT('su')">本店供应商</div>
+    <div class="itab" id="mt-qr" onclick="mT('qr')">二维码</div>
+  </div>
+  <div class="cnt">
+    <div class="pane on" id="m-rc"><button class="btn btn-p btn-bl" onclick="oRec()"><i class="ti ti-plus"></i>新增进货记录</button><div id="m-rcl"></div></div>
+    <div class="pane" id="m-sl"><div id="m-slc"></div></div>
+    <div class="pane" id="m-su">
+      <div class="al al-i"><i class="ti ti-info-circle"></i>本店供应商资质库——营业执照和生产许可一次存档，进货时直接关联带出。</div>
+      <button class="btn btn-p" onclick="om('m-addls')" style="margin-bottom:10px"><i class="ti ti-plus"></i>添加本店供应商</button>
+      <div id="m-sul"></div>
+    </div>
+    <div class="pane" id="m-qr">
+      <div class="card" style="text-align:center">
+        <div style="font-weight:600;font-size:14px;margin-bottom:4px" id="qr-nm"></div>
+        <div style="font-size:12px;color:var(--g4);margin-bottom:14px">顾客扫码查看本店食品安全公示</div>
+        <canvas id="qr-cv" width="180" height="180" style="border-radius:8px;border:1px solid var(--g2)"></canvas>
+        <div style="margin-top:8px;font-size:11px;color:var(--g4)" id="qr-tk"></div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+          <button class="btn btn-sm" onclick="dlQR()"><i class="ti ti-download"></i>下载二维码</button>
+          <button class="btn btn-sm btn-p" onclick="pvPub()"><i class="ti ti-eye"></i>预览公示页</button>
+        </div>
+      </div>
+      <div class="al al-i" style="margin-top:10px"><i class="ti ti-lock"></i>每店独立访问码，顾客只能查看本店数据，不会看到其他商户信息。</div>
+    </div>
+  </div>
+</div>
+
+<!-- 公示选择 -->
+<div class="sc" id="sc-pub-sel">
+  <div class="tb"><div class="tb-bk" onclick="go('portal')"><i class="ti ti-arrow-left"></i></div><div class="tb-logo"><i class="ti ti-shield-check"></i>食安链</div><div class="tb-role">扫码公示</div></div>
+  <div class="cnt"><div class="card" style="margin-top:12px"><div class="ct"><i class="ti ti-qrcode"></i>选择商户查看公示</div><div id="pub-sl"></div></div></div>
+</div>
+
+<!-- 公示页 -->
+<div class="sc" id="sc-pub">
+  <div class="tb"><div class="tb-bk" onclick="bkPub()"><i class="ti ti-arrow-left"></i></div><div class="tb-logo"><i class="ti ti-shield-check"></i>食安公示</div><div class="tb-sp"></div></div>
+  <div style="overflow-y:auto;flex:1">
+    <div class="pub-h"><h1 id="pub-nm"></h1><p id="pub-mt"></p><div class="pub-trust"><i class="ti ti-shield-check"></i>已向市场监管局备案公示</div></div>
+    <div style="padding:12px 12px 0"><div class="sb" style="margin-bottom:0"><i class="ti ti-search"></i><input id="pub-q" placeholder="搜索进货台账（食品名称/供应商/日期）" oninput="rPubR()" style="background:#fff;border-radius:var(--r)"></div></div>
+    <div class="pub-sec"><div class="pub-st" style="color:var(--green)"><i class="ti ti-license"></i>营业执照</div><div id="pub-biz"></div></div>
+    <div class="pub-sec"><div class="pub-st" style="color:var(--blue)"><i class="ti ti-certificate"></i>食品经营许可证</div><div id="pub-pm"></div></div>
+    <div class="pub-sec"><div class="pub-st" style="color:#E24B4A"><i class="ti ti-heart-rate-monitor"></i>员工健康证</div><div id="pub-hl"></div></div>
+    <div class="pub-sec">
+      <div class="pub-st" style="color:var(--amber)"><i class="ti ti-video"></i>后厨实时监控 <span class="b b-w" style="margin-left:auto;font-size:10px">接入中</span></div>
+      <div style="padding:14px"><div class="mon"><i class="ti ti-device-cctv"></i><div style="font-size:13px;font-weight:500;margin-bottom:4px">后厨监控接口已预留</div><div style="font-size:12px">接入摄像头后顾客可实时查看后厨操作</div></div></div>
+    </div>
+    <div class="pub-sec"><div class="pub-st" style="color:#533AB7"><i class="ti ti-clipboard-list"></i>进货台账公示</div><div id="pub-rcl"></div></div>
+    <div style="padding:18px;text-align:center;font-size:12px;color:var(--g4)">食安链 · 泰安爱琴海购物公园</div>
+  </div>
+</div>
+</div><!-- app end -->
+
+<!-- ===== MODALS ===== -->
+
+<!-- 商户注册 -->
+<div class="mo h" id="m-regm"><div class="modal">
+  <div class="mt">注册商户</div>
+  <div class="fi"><label>营业执照名称 *</label><input id="rm-n" placeholder="营业执照上的企业全称"></div>
+  <div class="fr">
+    <div class="fi"><label>铺位编号</label><input id="rm-c" placeholder="如 A区-101"></div>
+    <div class="fi"><label>业态类型</label><select id="rm-t"><option>正餐</option><option>快餐</option><option>奶茶/饮品</option><option>烘焙</option><option>小吃</option><option>其他餐饮</option></select></div>
+  </div>
+  <div class="fi"><label>手机号 *（用于登录）</label><input id="rm-ph" type="tel" placeholder="11位手机号" maxlength="11"></div>
+  <div class="fi"><label>联系人</label><input id="rm-ct" placeholder="店长姓名"></div>
+  <div class="fi">
+    <label>设置密码 *</label>
+    <div class="pw-wrap"><input id="rm-pw" type="password" placeholder="至少6位密码"><button class="pw-eye" onclick="togglePw('rm-pw',this)" tabindex="-1"><i class="ti ti-eye"></i></button></div>
+  </div>
+  <div class="fi">
+    <label>确认密码 *</label>
+    <div class="pw-wrap"><input id="rm-pw2" type="password" placeholder="再次输入密码"><button class="pw-eye" onclick="togglePw('rm-pw2',this)" tabindex="-1"><i class="ti ti-eye"></i></button></div>
+  </div>
+  <div class="mf"><button class="btn" onclick="cm('m-regm')">取消</button><button class="btn btn-p" onclick="regM()">注册</button></div>
+</div></div>
+
+<!-- 营运添加商户 -->
+<div class="mo h" id="m-addm"><div class="modal">
+  <div class="mt">添加商户</div>
+  <div class="fi"><label>营业执照名称 *</label><input id="am-n" placeholder="企业全称"></div>
+  <div class="fr">
+    <div class="fi"><label>铺位编号</label><input id="am-c" placeholder="A区-101"></div>
+    <div class="fi"><label>业态类型</label><select id="am-t"><option>正餐</option><option>快餐</option><option>奶茶/饮品</option><option>烘焙</option><option>小吃</option><option>其他餐饮</option></select></div>
+  </div>
+  <div class="fi"><label>手机号</label><input id="am-ph" placeholder="13800000000"></div>
+  <div class="fi"><label>联系人</label><input id="am-ct" placeholder="店长姓名"></div>
+  <div class="fi">
+    <label>初始密码</label>
+    <div class="pw-wrap"><input id="am-pw" type="password" placeholder="为商户设置初始密码（默认：手机号后6位）"><button class="pw-eye" onclick="togglePw('am-pw',this)" tabindex="-1"><i class="ti ti-eye"></i></button></div>
+    <div class="l-tip">留空则默认密码为手机号后6位</div>
+  </div>
+  <div class="mf"><button class="btn" onclick="cm('m-addm')">取消</button><button class="btn btn-p" onclick="addM()">添加</button></div>
+</div></div>
+
+<!-- 注册厂家 -->
+<div class="mo h" id="m-regf"><div class="modal">
+  <div class="mt">注册厂家</div>
+  <div class="al al-w"><i class="ti ti-alert-triangle"></i>需上传营业执照和食品生产许可证方可向商户提供检测报告。</div>
+  <div class="fi"><label>厂家/品牌名称 *</label><input id="f-n" placeholder="如：金龙鱼（益海嘉里）食品有限公司"></div>
+  <div class="fr">
+    <div class="fi"><label>统一社会信用代码</label><input id="f-cd" placeholder="18位"></div>
+    <div class="fi"><label>主营品类</label><input id="f-ct" placeholder="食用油、大米…"></div>
+  </div>
+  <div class="fi"><label>联系电话</label><input id="f-ph" placeholder="400-000-0000"></div>
+  <div class="fi"><label>营业执照</label><div class="uz" onclick="tf('f-fb')"><i class="ti ti-upload"></i>上传营业执照</div><input type="file" id="f-fb" accept="image/*,.pdf" style="display:none" onchange="hF(this,'f-bz','f-pb')"><div id="f-pb" style="margin-top:6px"></div></div>
+  <div class="fi"><label>食品生产许可证</label><div class="uz" onclick="tf('f-fp')"><i class="ti ti-upload"></i>上传食品生产许可证</div><input type="file" id="f-fp" accept="image/*,.pdf" style="display:none" onchange="hF(this,'f-pm','f-pp')"><div id="f-pp" style="margin-top:6px"></div></div>
+  <div class="fi"><label>许可证有效期至</label><input type="date" id="f-ex"></div>
+  <div class="mf"><button class="btn" onclick="cm('m-regf')">取消</button><button class="btn btn-p" onclick="regF()">提交注册</button></div>
+</div></div>
+
+<!-- 单份报告 -->
+<div class="mo h" id="m-addr"><div class="modal">
+  <div class="mt">上传检测报告</div>
+  <div class="fi"><label>产品名称 *</label><input id="r-pd" placeholder="如：金龙鱼一级大米（5kg）"></div>
+  <div class="fr">
+    <div class="fi"><label>生产日期 *</label><input type="date" id="r-dt" oninput="cREx()"></div>
+    <div class="fi"><label>批次号</label><input id="r-bt" placeholder="20250508-A1（可选）"></div>
+  </div>
+  <div class="fi"><label>保质期设置</label>
+    <div class="fr">
+      <div class="fi"><label style="font-weight:400">保质月数</label><input type="number" id="r-mo" placeholder="如 12" oninput="cREx()"></div>
+      <div class="fi"><label style="font-weight:400">或天数</label><input type="number" id="r-dy" placeholder="如 365" oninput="cREx()"></div>
+    </div>
+    <div class="sl-pre"><button class="sl-b" onclick="slP('r',3)">3个月</button><button class="sl-b" onclick="slP('r',6)">6个月</button><button class="sl-b" onclick="slP('r',12)">1年</button><button class="sl-b" onclick="slP('r',24)">2年</button><button class="sl-b" onclick="slP('r',36)">3年</button></div>
+    <div id="r-ex-d" style="font-size:12px;color:var(--green);margin-top:6px"></div>
+  </div>
+  <div class="fi"><label>检测项目</label><input id="r-it" placeholder="农残、重金属、微生物…（可选）"></div>
+  <div class="fi"><label>检测结论</label><select id="r-rs"><option value="pass">合格 ✓</option><option value="fail">不合格 ✗</option></select></div>
+  <div class="fi"><label>检测报告文件 *</label><div class="uz" onclick="tf('r-ff')"><i class="ti ti-file-certificate"></i>上传检测报告（JPG/PNG/PDF）</div><input type="file" id="r-ff" accept="image/*,.pdf" style="display:none" onchange="hF(this,'r-doc','r-pv')"><div id="r-pv" style="margin-top:6px"></div></div>
+  <div class="mf"><button class="btn" onclick="cm('m-addr')">取消</button><button class="btn btn-p" onclick="savR()">发布报告</button></div>
+</div></div>
+
+<!-- 批量上传 -->
+<div class="mo h" id="m-bulk"><div class="modal">
+  <div class="mt"><i class="ti ti-files" style="color:var(--blue)"></i> 批量上传检测报告</div>
+  <div class="al al-i"><i class="ti ti-info-circle"></i>一次选多个文件，上传后可逐一补充产品信息。文件名将自动作为产品名称。</div>
+  <div class="uz" onclick="tf('bk-fs')" style="padding:24px"><i class="ti ti-cloud-upload" style="font-size:32px;margin-bottom:8px"></i><div style="font-size:13px;font-weight:500;margin-bottom:4px">点击选择多个文件</div><div>支持 JPG/PNG/PDF，可同时选多个</div></div>
+  <input type="file" id="bk-fs" accept="image/*,.pdf" multiple style="display:none" onchange="hBulk(this)">
+  <div style="margin-top:12px"><div class="shd">待上传列表</div><div id="bk-list"></div></div>
+  <div class="mf"><button class="btn" onclick="cm('m-bulk')">关闭</button><button class="btn btn-p" id="bk-sub" onclick="subBulk()" style="display:none"><i class="ti ti-upload"></i>全部上传</button></div>
+</div></div>
+
+<!-- 进货记录 -->
+<div class="mo h" id="m-rec"><div class="modal">
+  <div class="mt">新增进货记录</div>
+  <!-- 供应商 -->
+  <div class="shd">供应商来源</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+    <div id="src-pl" class="sopt" onclick="setRS('pl')"><div><div style="font-size:13px;font-weight:600;color:var(--blue)"><i class="ti ti-cloud"></i> 食安链厂家</div><div style="font-size:11px;color:var(--g4)">从平台厂家库关联</div></div></div>
+    <div id="src-lo" class="sopt" onclick="setRS('lo')"><div><div style="font-size:13px;font-weight:600;color:var(--green)"><i class="ti ti-building-store"></i> 本店供应商</div><div style="font-size:11px;color:var(--g4)">本店已存档供应商</div></div></div>
+  </div>
+  <div id="pl-a" style="display:none">
+    <div class="sb"><i class="ti ti-search"></i><input id="rec-mq" placeholder="搜索厂家名称或品类…" oninput="rFPk()"></div>
+    <div id="f-pk" style="max-height:140px;overflow-y:auto"></div>
+    <div id="r-pw" style="display:none;margin-top:10px">
+      <div class="shd">选择检测报告（产品+生产日期）</div>
+      <div id="r-pk" style="max-height:150px;overflow-y:auto"></div>
+    </div>
+  </div>
+  <div id="lo-a" style="display:none"><div id="lo-pk" style="max-height:140px;overflow-y:auto"></div></div>
+  <div id="lk-box" style="display:none;background:var(--gl);border:1px solid var(--gm);border-radius:var(--r);padding:10px 12px;margin:10px 0;font-size:12px;color:var(--green)">
+    <div style="font-weight:600;margin-bottom:3px"><i class="ti ti-check"></i> <span id="lk-n"></span></div><div id="lk-d"></div>
+  </div>
+  <!-- 进货信息 -->
+  <div class="fi"><label>食品/原料名称 *</label><input id="rec-fd" placeholder="如：一级大米、带皮五花肉、食用油"></div>
+  <div class="fr">
+    <div class="fi"><label>进货日期 *</label><input type="date" id="rec-dt"></div>
+    <div class="fi"><label>数量</label><input id="rec-qt" placeholder="50kg（可选）"></div>
+  </div>
+  <!-- 保质期 -->
+  <div class="shd">保质期设置</div>
+  <div class="fr">
+    <div class="fi"><label>生产日期</label><input type="date" id="rec-pd" oninput="cRcEx()"></div>
+    <div class="fi"><label>保质月数</label><input type="number" id="rec-mo" placeholder="如 12" oninput="cRcEx()"></div>
+  </div>
+  <div class="sl-pre" id="rec-sl">
+    <button class="sl-b" onclick="slP('rc',1)">1月</button>
+    <button class="sl-b" onclick="slP('rc',3)">3月</button>
+    <button class="sl-b" onclick="slP('rc',6)">6月</button>
+    <button class="sl-b" onclick="slP('rc',12)">1年</button>
+    <button class="sl-b" onclick="slP('rc',24)">2年</button>
+  </div>
+  <div id="rec-ex-d" style="font-size:12px;color:var(--green);margin-top:6px;margin-bottom:10px"></div>
+  <div class="fi"><label>批次号（可选）</label><input id="rec-bt" placeholder="可选"></div>
+  <!-- 保密 -->
+  <div class="tg-w">
+    <label class="tg"><input type="checkbox" id="rec-sc"><span class="tg-sl"></span></label>
+    <span style="font-size:13px"><i class="ti ti-eye-off" style="color:#7C3AED"></i> 对外保密（公示页只显示品类，隐藏厂家细节）</span>
+  </div>
+  <div id="rec-cw" style="display:none"><div class="fi"><label>对外显示的品类名称</label><input id="rec-cat" placeholder="如：调味品、食用油"></div></div>
+  <!-- 文件 -->
+  <div class="shd">上传文件</div>
+  <div class="fi"><label>检测报告（已关联平台报告可跳过）</label><div class="uz" onclick="tf('rec-ft')"><i class="ti ti-flask"></i>上传检测报告</div><input type="file" id="rec-ft" accept="image/*,.pdf" style="display:none" onchange="hF(this,'rec-ts','rec-pt')"><div id="rec-pt" style="margin-top:6px"></div></div>
+  <div class="fi"><label>进货台账凭证（小票/送货单）</label><div class="uz" onclick="tf('rec-fr')"><i class="ti ti-receipt"></i>上传进货凭证</div><input type="file" id="rec-fr" accept="image/*,.pdf" style="display:none" onchange="hF(this,'rec-rc','rec-pr')"><div id="rec-pr" style="margin-top:6px"></div></div>
+  <div class="mf"><button class="btn" onclick="cm('m-rec')">取消</button><button class="btn btn-p" onclick="savRc()">保存记录</button></div>
+</div></div>
+
+<!-- 本店供应商 -->
+<div class="mo h" id="m-addls"><div class="modal">
+  <div class="mt">添加本店供应商</div>
+  <div class="fr"><div class="fi"><label>供应商名称 *</label><input id="ls-n" placeholder="如：泰安XX批发市场"></div><div class="fi"><label>主营品类</label><input id="ls-ct" placeholder="蔬菜、鲜肉…"></div></div>
+  <div class="fi"><label>联系电话</label><input id="ls-ph" placeholder="（可选）"></div>
+  <div class="fi"><label>营业执照</label><div class="uz" onclick="tf('ls-fb')"><i class="ti ti-upload"></i>上传营业执照</div><input type="file" id="ls-fb" accept="image/*,.pdf" style="display:none" onchange="hF(this,'ls-bz','ls-pb')"><div id="ls-pb" style="margin-top:6px"></div></div>
+  <div class="fi"><label>食品生产/经营许可证</label><div class="uz" onclick="tf('ls-fp')"><i class="ti ti-upload"></i>上传许可证</div><input type="file" id="ls-fp" accept="image/*,.pdf" style="display:none" onchange="hF(this,'ls-pm','ls-pp')"><div id="ls-pp" style="margin-top:6px"></div></div>
+  <div class="fi"><label>许可证有效期至</label><input type="date" id="ls-ex"></div>
+  <div class="mf"><button class="btn" onclick="cm('m-addls')">取消</button><button class="btn btn-p" onclick="savLS()">保存</button></div>
+</div></div>
+
+<!-- 员工健康证 -->
+<div class="mo h" id="m-addh"><div class="modal">
+  <div class="mt">添加员工健康证</div>
+  <div class="fr"><div class="fi"><label>员工姓名 *</label><input id="h-n" placeholder="姓名"></div><div class="fi"><label>岗位</label><select id="h-r"><option>厨师</option><option>后厨帮工</option><option>服务员</option><option>收银</option><option>店长</option><option>其他</option></select></div></div>
+  <div class="fr"><div class="fi"><label>健康证编号</label><input id="h-no" placeholder="证件号（可选）"></div><div class="fi"><label>有效期至</label><input type="date" id="h-ex"></div></div>
+  <div class="fi"><label>健康证图片</label><div class="uz" onclick="tf('h-ff')"><i class="ti ti-id-badge"></i>上传健康证</div><input type="file" id="h-ff" accept="image/*,.pdf" style="display:none" onchange="hF(this,'h-dc','h-pv')"><div id="h-pv" style="margin-top:6px"></div></div>
+  <div class="mf"><button class="btn" onclick="cm('m-addh')">取消</button><button class="btn btn-p" onclick="savH()">保存</button></div>
+</div></div>
+
+<!-- 查看文件 -->
+<div class="mo h" id="m-vf" onclick="cm('m-vf')">
+  <div style="max-width:90vw;text-align:center" onclick="event.stopPropagation()">
+    <img id="vf-i" style="max-width:88vw;max-height:82vh;border-radius:var(--r2);display:none">
+    <div id="vf-p" style="display:none;background:#fff;padding:28px 36px;border-radius:var(--r2)">
+      <i class="ti ti-file-type-pdf" style="font-size:52px;color:#E24B4A;display:block;margin-bottom:10px"></i>
+      <div style="font-size:13px;color:var(--g5)" id="vf-n"></div>
+    </div>
+    <button class="btn" style="margin-top:12px;background:rgba(255,255,255,.9)" onclick="cm('m-vf')">关闭</button>
+  </div>
+</div>
+
+<script>
+/* ===== 数据结构 =====
+  D.ms  : 商户列表  [{id,name,code,phone,pw,type,contact}]
+  D.fs  : 厂家列表  [{id,name,code,cat,phone,bz,pm,ex,v}]
+  D.rpts: 检测报告  {fid:[{id,prod,pd,ed,bt,it,rs,f}]}
+  D.rcs : 进货台账  {mid:[{id,st,sid,rid,fd,dt,pd,ed,qt,bt,sc,cat,tf,rf}]}
+  D.lic : 店铺资质  {mid:{bn,be,bf,pn,pe,pf}}
+  D.hlth: 员工健康证 {mid:[{id,n,r,no,ex,f}]}
+  D.ls  : 本店供应商 {mid:[{id,name,cat,phone,bz,pm,ex}]}
+*/
+let D={ms:[],fs:[],rpts:{},rcs:{},lic:{},hlth:{},ls:{}};
+let C={mid:null,fid:null,pubMid:null,pubPrev:'pub-sel'};
+let T={};
+let RS={src:null,fid:null,rid:null,lsid:null};
+let _lm='phone';
+let BQ=[];
+
+function ldD(){try{const s=localStorage.getItem('fss9');if(s)D=JSON.parse(s);}catch(e){}}
+function svD(){try{localStorage.setItem('fss9',JSON.stringify(D));}catch(e){}}
+ldD();
+
+// 种子数据（演示用）
+if(!D.ms.length){
+  D.ms=[
+    {id:'m1',name:'老张牛肉面馆',code:'A区-101',phone:'13812345678',pw:'345678',type:'正餐',contact:'张老板'},
+    {id:'m2',name:'海底捞火锅（泰安）',code:'B区-205',phone:'13987654321',pw:'654321',type:'正餐',contact:'李经理'},
+    {id:'m3',name:'奈雪の茶',code:'C区-302',phone:'13600001111',pw:'001111',type:'奶茶/饮品',contact:'王店长'},
+  ];
+  D.fs=[
+    {id:'f1',name:'金龙鱼（益海嘉里）',code:'91440300X',cat:'食用油、大米',phone:'400-830-5888',bz:{n:'营业执照.jpg',u:'',t:'img'},pm:{n:'生产许可证.jpg',u:'',t:'img'},ex:'2027-12-31',v:true},
+    {id:'f2',name:'蒙牛乳业股份有限公司',code:'91150100X',cat:'乳制品、饮料',phone:'400-818-6999',bz:{n:'营业执照.jpg',u:'',t:'img'},pm:{n:'生产许可证.jpg',u:'',t:'img'},ex:'2026-06-30',v:true},
+  ];
+  D.rpts={
+    'f1':[
+      {id:'r1',prod:'金龙鱼一级大米（5kg）',pd:'2025-03-01',ed:'2026-03-01',bt:'20250301-A',it:'农残、重金属、微生物',rs:'pass',f:{n:'检测报告_大米.pdf',u:'',t:'pdf'}},
+      {id:'r2',prod:'金龙鱼一级大米（5kg）',pd:'2025-04-15',ed:'2026-04-15',bt:'20250415-B',it:'农残、重金属、微生物',rs:'pass',f:{n:'检测报告_大米_0415.pdf',u:'',t:'pdf'}},
+      {id:'r3',prod:'金龙鱼纯正花生油（5L）',pd:'2025-02-20',ed:'2026-02-20',bt:'20250220-A',it:'酸价、过氧化值、农残',rs:'pass',f:{n:'检测报告_花生油.pdf',u:'',t:'pdf'}},
+    ],
+    'f2':[{id:'r4',prod:'蒙牛纯牛奶（250ml×24）',pd:'2025-05-01',ed:'2025-07-01',bt:'20250501-M',it:'蛋白质、脂肪、微生物',rs:'pass',f:{n:'检测报告_牛奶.pdf',u:'',t:'pdf'}}]
+  };
+  D.rcs={'m1':[
+    {id:'rc1',st:'pl',sid:'f1',rid:'r1',fd:'金龙鱼一级大米',dt:'2025-05-08',pd:'2025-03-01',ed:'2026-03-01',qt:'100kg',bt:'20250301-A',sc:false,cat:'',tf:null,rf:{n:'送货单.jpg',u:'',t:'img'}},
+    {id:'rc2',st:'pl',sid:'f1',rid:'r3',fd:'金龙鱼花生油',dt:'2025-05-06',pd:'2025-02-20',ed:'2026-02-20',qt:'20桶',bt:'',sc:true,cat:'调味油脂',tf:null,rf:{n:'送货单2.jpg',u:'',t:'img'}},
+  ]};
+  D.lic={'m1':{bn:'91370900X',be:'2030-06-30',bf:{n:'营业执照.jpg',u:'',t:'img'},pn:'JY37090X',pe:'2026-12-31',pf:{n:'食品经营许可证.jpg',u:'',t:'img'}}};
+  D.hlth={'m1':[
+    {id:'h1',n:'张老板',r:'店长',no:'H2025001',ex:'2026-05-01',f:{n:'健康证.jpg',u:'',t:'img'}},
+    {id:'h2',n:'李大厨',r:'厨师',no:'H2025002',ex:'2026-05-01',f:{n:'健康证.jpg',u:'',t:'img'}},
+  ]};
+  D.ls={'m1':[],'m2':[],'m3':[]};
+  svD();
+}
+
+// ===== 导航 =====
+function go(id){
+  document.querySelectorAll('.sc').forEach(s=>s.classList.remove('on'));
+  document.getElementById('sc-'+id).classList.add('on');
+  if(id==='op'){rOpO();opT('o');}
+  if(id==='mfr-l') rFrL();
+  if(id==='mer-l'){resetLogin();}
+  if(id==='pub-sel') rPubSel();
+}
+function bkPub(){go(C.pubPrev);}
+
+function resetLogin(){
+  document.getElementById('l-inp').value='';
+  document.getElementById('l-pw').value='';
+  const msg=document.getElementById('l-msg');
+  if(msg) msg.style.display='none';
+}
+
+// ===== 密码显示切换 =====
+function togglePw(inputId,btn){
+  const inp=document.getElementById(inputId);
+  const icon=btn.querySelector('i');
+  if(inp.type==='password'){inp.type='text';icon.className='ti ti-eye-off';}
+  else{inp.type='password';icon.className='ti ti-eye';}
+}
+
+// ===== TABS =====
+function opT(t){['o','m','f'].forEach(x=>{document.getElementById('ot-'+x).classList.toggle('on',x===t);document.getElementById('op-'+x).classList.toggle('on',x===t);});if(t==='o')rOpO();if(t==='m')rOpM();if(t==='f')rOpF();}
+function fT(t){['r','p'].forEach(x=>{document.getElementById('ft-'+x).classList.toggle('on',x===t);document.getElementById('f-'+x).classList.toggle('on',x===t);});if(t==='r')rFrR();if(t==='p')rFrP();}
+function mT(t){['rc','sl','su','qr'].forEach(x=>{document.getElementById('mt-'+x).classList.toggle('on',x===t);document.getElementById('m-'+x).classList.toggle('on',x===t);});if(t==='rc')rMrRc();if(t==='sl')rMrSl();if(t==='su')rMrSu();if(t==='qr')rMrQR();}
+
+// ===== 营运端 =====
+function rOpO(){
+  const ms=D.ms;let tr=0,ok=0,mi=0;
+  ms.forEach(m=>{const rc=D.rcs[m.id]||[];tr+=rc.length;rc.forEach(r=>{rcOk(m.id,r)?ok++:mi++;});});
+  document.getElementById('op-o').innerHTML=`
+    <div class="stats">
+      <div class="scard"><div class="sn">${ms.length}</div><div class="sl">商户</div></div>
+      <div class="scard"><div class="sn">${D.fs.length}</div><div class="sl">厂家</div></div>
+      <div class="scard"><div class="sn" style="color:var(--green)">${ok}</div><div class="sl">台账齐全</div></div>
+      <div class="scard"><div class="sn" style="color:var(--amber)">${mi}</div><div class="sl">待补充</div></div>
+    </div>
+    <div class="shd">需要关注</div>
+    ${ms.map(m=>{
+      const c=(D.rcs[m.id]||[]).filter(r=>!rcOk(m.id,r)).length;
+      const l=D.lic[m.id]||{};const lk=l.bf&&l.bf.n&&l.pf&&l.pf.n;
+      if(!c&&lk) return '';
+      return `<div class="li" onclick="opEnt('${m.id}')"><div style="display:flex;justify-content:space-between"><div class="li-t">${m.name}</div><div>${c?`<span class="b b-w">${c}条待补充</span>`:''} ${!lk?'<span class="b b-w">证照待传</span>':''}</div></div><div class="li-s">${m.code||'—'} · ${m.type}</div></div>`;
+    }).join('')||'<div class="li" style="cursor:default;color:var(--green)"><i class="ti ti-check"></i> 所有商户资质均已齐全</div>'}
+    <div class="shd">近期进货台账</div>
+    ${(()=>{
+      let all=[];ms.forEach(m=>(D.rcs[m.id]||[]).forEach(r=>all.push({...r,mn:m.name,mid:m.id})));
+      all.sort((a,b)=>b.dt.localeCompare(a.dt));
+      return all.slice(0,5).map(r=>`<div class="li" style="cursor:default"><div class="li-t">${r.mn} — ${r.sc?`<span class="b b-s"><i class="ti ti-eye-off"></i>${r.cat||'保密品类'}</span>`:r.fd}</div><div class="li-s">${r.dt} · ${r.qt||'—'} · ${gSN(r.mid,r)}</div></div>`).join('')
+      ||'<div class="empty"><i class="ti ti-inbox"></i>暂无台账</div>';
+    })()}`;
+}
+
+function rOpM(){
+  const q=(document.getElementById('op-q')||{value:''}).value.toLowerCase();
+  document.getElementById('op-ml').innerHTML=D.ms.filter(m=>m.name.toLowerCase().includes(q)||(m.code||'').toLowerCase().includes(q)).map(m=>{
+    const rc=D.rcs[m.id]||[];const mi=rc.filter(r=>!rcOk(m.id,r)).length;
+    const l=D.lic[m.id]||{};const lk=l.bf&&l.bf.n&&l.pf&&l.pf.n;
+    return `<div class="li" onclick="opEnt('${m.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div class="li-t">${m.name} <span class="b b-i">${m.type}</span></div>
+        ${mi?`<span class="b b-w">${mi}待补充</span>`:`<span class="b b-ok">台账齐全</span>`}
+      </div>
+      <div class="li-s">${m.code||'—'} · ${m.contact||'—'} · ${m.phone||'—'}<br>台账${rc.length}条 · ${lk?'<span style="color:var(--green)">证照完整</span>':'<span style="color:var(--amber)">证照待传</span>'}</div>
+    </div>`;
+  }).join('')||'<div class="empty"><i class="ti ti-search"></i>无匹配</div>';
+}
+
+function rOpF(){
+  document.getElementById('op-fl').innerHTML=D.fs.map(f=>`
+    <div class="li" style="cursor:default">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div class="li-t">${f.name} ${f.v?'<span class="b b-ok"><i class="ti ti-check"></i>已认证</span>':''}</div>
+        <span class="b b-i">${(D.rpts[f.id]||[]).length}份报告</span>
+      </div>
+      <div class="li-s">${f.cat||''} · 许可期至 ${f.ex||'—'}</div>
+    </div>`).join('')||'<div class="empty"><i class="ti ti-building-factory-2"></i>暂无厂家</div>';
+}
+
+function opEnt(mid){
+  C.mid=mid;
+  const m=D.ms.find(x=>x.id===mid);
+  document.getElementById('m-role').textContent=m.name;
+  go('mer');mT('rc');
+}
+
+function addM(){
+  const n=document.getElementById('am-n').value.trim();
+  const ph=document.getElementById('am-ph').value.trim();
+  if(!n){alert('请填写营业执照名称');return;}
+  const pwVal=document.getElementById('am-pw').value||ph.slice(-6)||'123456';
+  const id='m'+Date.now();
+  D.ms.push({id,name:n,code:document.getElementById('am-c').value.trim(),phone:ph,pw:pwVal,type:document.getElementById('am-t').value,contact:document.getElementById('am-ct').value.trim()});
+  D.rcs[id]=[];D.ls[id]=[];svD();cm('m-addm');rOpO();
+  toast(`商户已添加，初始密码：${pwVal}`);
+}
+
+// ===== 厂家端 =====
+function rFrL(){
+  document.getElementById('mfr-ll').innerHTML=D.fs.map(f=>`
+    <div class="li" onclick="lgnF('${f.id}')">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="av">${f.name.charAt(0)}</div>
+        <div><div class="li-t" style="margin-bottom:1px">${f.name}</div><div class="li-s">${f.cat||''} · ${(D.rpts[f.id]||[]).length}份报告</div></div>
+      </div>
+    </div>`).join('')||'<div style="font-size:13px;color:var(--g4);padding:8px 0">暂无厂家，请注册</div>';
+}
+
+function lgnF(id){C.fid=id;const f=D.fs.find(x=>x.id===id);document.getElementById('f-role').textContent=f.name;go('mfr');rFrR();}
+
+function rFrR(){
+  const rpts=D.rpts[C.fid]||[];
+  document.getElementById('f-rl').innerHTML=rpts.length?rpts.map(r=>`
+    <div class="card" style="padding:12px">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="background:var(--bl);color:var(--blue);border-radius:8px;width:40px;height:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${r.pd.substring(5,7)}<br><span style="font-size:9px">月</span></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:13px">${r.prod}</div>
+          <div style="font-size:12px;color:var(--g4);margin-top:2px">生产：${r.pd} · 批次：${r.bt||'—'} · <span style="color:${r.rs==='pass'?'var(--green)':'var(--red)'}">${r.rs==='pass'?'合格':'不合格'}</span></div>
+          ${r.ed?`<div style="font-size:12px;color:var(--g4)">保质期至：${r.ed}</div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          ${r.f&&r.f.n?`<button class="btn btn-sm" onclick="vF('${r.f.u}','${r.f.n}','${r.f.t}')"><i class="ti ti-eye"></i></button>`:''}
+          <button class="btn btn-sm btn-d" onclick="dRpt('${r.id}')"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+    </div>`).join(''):'<div class="empty"><i class="ti ti-file-certificate"></i>暂无报告，点击上方上传</div>';
+}
+
+function rFrP(){
+  const f=D.fs.find(x=>x.id===C.fid);if(!f)return;
+  document.getElementById('f-pc').innerHTML=`
+    <div class="card">
+      <div class="ct"><i class="ti ti-building-factory-2"></i>${f.name}</div>
+      ${f.v?'<span class="b b-ok" style="margin-bottom:10px;display:inline-flex"><i class="ti ti-rosette-discount-check"></i>平台认证厂家</span>':''}
+      <div style="font-size:13px;color:var(--g5);line-height:2.1">
+        <div>信用代码：${f.code||'—'}</div><div>主营品类：${f.cat||'—'}</div>
+        <div>联系电话：${f.phone||'—'}</div><div>许可证有效期至：${f.ex||'—'}</div>
+      </div>
+      <div class="chips" style="margin-top:10px">${cF(f.bz,'ti-license','营业执照')}${cF(f.pm,'ti-certificate','生产许可证')}</div>
+    </div>`;
+}
+
+function regF(){
+  const n=document.getElementById('f-n').value.trim();if(!n){alert('请填写厂家名称');return;}
+  const id='f'+Date.now();
+  D.fs.push({id,name:n,code:document.getElementById('f-cd').value.trim(),cat:document.getElementById('f-ct').value.trim(),phone:document.getElementById('f-ph').value.trim(),bz:T['f-bz']||{n:'',u:'',t:''},pm:T['f-pm']||{n:'',u:'',t:''},ex:document.getElementById('f-ex').value,v:false});
+  D.rpts[id]=[];svD();cm('m-regf');rFrL();
+}
+
+function savR(){
+  const p=document.getElementById('r-pd').value.trim(),d=document.getElementById('r-dt').value;
+  if(!p||!d){alert('请填写产品名称和生产日期');return;}
+  if(!D.rpts[C.fid])D.rpts[C.fid]=[];
+  D.rpts[C.fid].unshift({id:'rp'+Date.now(),prod:p,pd:d,ed:cED(d,+document.getElementById('r-mo').value||0,+document.getElementById('r-dy').value||0),bt:document.getElementById('r-bt').value.trim(),it:document.getElementById('r-it').value.trim(),rs:document.getElementById('r-rs').value,f:T['r-doc']||{n:'',u:'',t:''}});
+  svD();cm('m-addr');rFrR();
+}
+
+function dRpt(id){if(!confirm('删除该报告？'))return;D.rpts[C.fid]=(D.rpts[C.fid]||[]).filter(r=>r.id!==id);svD();rFrR();}
+
+// 批量上传
+function hBulk(inp){BQ=Array.from(inp.files).map(f=>({file:f,st:'wait'}));rBkL();document.getElementById('bk-sub').style.display=BQ.length?'inline-flex':'none';}
+function rBkL(){
+  document.getElementById('bk-list').innerHTML=BQ.length?BQ.map(it=>`
+    <div class="bk-it">
+      <i class="ti ti-file${it.st==='done'?'-check':''}" style="font-size:20px;color:${it.st==='done'?'var(--green)':'var(--g4)'}"></i>
+      <div class="bk-in"><div class="bk-n">${it.file.name}</div><div class="bk-s">${it.st==='done'?'已上传':'待上传'} · ${(it.file.size/1024).toFixed(0)}KB</div>${it.st==='uploading'?'<div class="bk-bar"><div class="bk-prog" style="width:70%"></div></div>':''}</div>
+      <span class="b ${it.st==='done'?'b-ok':it.st==='uploading'?'b-i':'b-g'}">${it.st==='done'?'完成':it.st==='uploading'?'上传中':'等待'}</span>
+    </div>`).join(''):'<div style="font-size:13px;color:var(--g4);padding:8px 0">未选择文件</div>';
+}
+function subBulk(){
+  if(!D.rpts[C.fid])D.rpts[C.fid]=[];
+  let i=0;
+  function nx(){
+    if(i>=BQ.length){svD();rFrR();return;}
+    BQ[i].st='uploading';rBkL();
+    const it=BQ[i];
+    const rd=new FileReader();
+    rd.onload=e=>{
+      const isI=it.file.type.startsWith('image/');
+      D.rpts[C.fid].unshift({id:'rp'+Date.now()+i,prod:it.file.name.replace(/\.[^.]+$/,''),pd:new Date().toISOString().substring(0,10),ed:'',bt:'',it:'',rs:'pass',f:{n:it.file.name,u:isI?e.target.result:'',t:isI?'img':'pdf'}});
+      BQ[i].st='done';i++;rBkL();setTimeout(nx,300);
+    };
+    rd.readAsDataURL(it.file);
+  }
+  nx();
+}
+
+// ===== 商户登录 =====
+function setLM(m){
+  _lm=m;
+  document.querySelectorAll('.l-tab').forEach((t,i)=>t.classList.toggle('on',['phone','name'][i]===m));
+  document.getElementById('l-lbl').textContent=m==='phone'?'手机号':'营业执照名称';
+  document.getElementById('l-inp').placeholder=m==='phone'?'请输入注册手机号':'请输入营业执照上的企业名称';
+  document.getElementById('l-inp').type=m==='phone'?'tel':'text';
+  document.getElementById('l-inp').value='';
+  document.getElementById('l-pw').value='';
+  document.getElementById('l-msg').style.display='none';
+}
+
+function doLgn(){
+  const v=document.getElementById('l-inp').value.trim();
+  const pw=document.getElementById('l-pw').value;
+  const msg=document.getElementById('l-msg');
+  if(!v||!pw){msg.textContent='请填写账号和密码';msg.style.display='block';return;}
+  let m=null;
+  if(_lm==='phone') m=D.ms.find(x=>x.phone===v);
+  else m=D.ms.find(x=>x.name===v||x.name.toLowerCase()===v.toLowerCase());
+  if(!m){msg.textContent='账号不存在，请检查输入或联系营运方注册';msg.style.display='block';return;}
+  if(m.pw!==pw){msg.textContent='密码错误，请重试';msg.style.display='block';return;}
+  msg.style.display='none';
+  lgnM(m.id);
+}
+
+function regM(){
+  const n=document.getElementById('rm-n').value.trim();
+  const ph=document.getElementById('rm-ph').value.trim();
+  const pw=document.getElementById('rm-pw').value;
+  const pw2=document.getElementById('rm-pw2').value;
+  if(!n){alert('请填写营业执照名称');return;}
+  if(!ph||ph.length!==11){alert('请填写正确的11位手机号');return;}
+  if(!pw||pw.length<6){alert('密码至少6位');return;}
+  if(pw!==pw2){alert('两次密码不一致');return;}
+  if(D.ms.find(x=>x.name===n)){alert('该营业执照名称已注册');return;}
+  if(D.ms.find(x=>x.phone===ph)){alert('该手机号已注册');return;}
+  const id='m'+Date.now();
+  D.ms.push({id,name:n,code:document.getElementById('rm-c').value.trim(),phone:ph,pw,type:document.getElementById('rm-t').value,contact:document.getElementById('rm-ct').value.trim()});
+  D.rcs[id]=[];D.ls[id]=[];svD();
+  cm('m-regm');lgnM(id);
+}
+
+function lgnM(id){
+  C.mid=id;
+  const m=D.ms.find(x=>x.id===id);
+  document.getElementById('m-role').textContent=m.name;
+  go('mer');mT('rc');
+}
+
+// ===== 进货台账 =====
+function rMrRc(){
+  const rc=D.rcs[C.mid]||[];
+  document.getElementById('m-rcl').innerHTML=rc.length?rc.map(r=>{
+    const ok=rcOk(C.mid,r),lr=gLR(r);
+    return `<div class="card">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+        <div style="font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px">
+          ${r.sc?`<span class="b b-s"><i class="ti ti-eye-off"></i>${r.cat||'保密品类'}</span>`:''} ${r.fd}
+        </div>
+        <span class="b ${ok?'b-ok':'b-w'}">${ok?'资质齐全':'待补充'}</span>
+      </div>
+      <div style="font-size:12px;color:var(--g5);line-height:2">
+        <div>${r.dt}${r.qt?' · '+r.qt:''}${r.bt?' · 批次：'+r.bt:''}</div>
+        <div>供应商：${gSN(C.mid,r)}${r.st==='pl'?' <span class="b b-i" style="font-size:10px"><i class="ti ti-cloud"></i>食安链</span>':''}</div>
+        ${r.pd?`<div>生产：${r.pd}${r.ed?' · 保质期至：'+r.ed:''}</div>`:''}
+        ${lr?`<div style="color:var(--green)"><i class="ti ti-file-certificate"></i> 已关联报告：${lr.prod}</div>`:''}
+      </div>
+      <div class="chips" style="margin-top:8px">
+        ${sBzC(C.mid,r)}${sPmC(C.mid,r)}
+        ${lr&&lr.f&&lr.f.n?`<div class="chip c-ok" onclick="vF('${lr.f.u}','${lr.f.n}','${lr.f.t}')"><i class="ti ti-flask"></i>检测报告</div>`:r.tf&&r.tf.n?`<div class="chip c-ok" onclick="vF('${r.tf.u}','${r.tf.n}','${r.tf.t}')"><i class="ti ti-flask"></i>检测报告</div>`:'<div class="chip c-ms"><i class="ti ti-alert-circle"></i>检测报告缺</div>'}
+        ${r.rf&&r.rf.n?`<div class="chip c-ok" onclick="vF('${r.rf.u}','${r.rf.n}','${r.rf.t}')"><i class="ti ti-receipt"></i>台账凭证</div>`:'<div class="chip c-ms"><i class="ti ti-alert-circle"></i>台账凭证缺</div>'}
+      </div>
+      <div style="text-align:right;margin-top:8px">
+        <button class="btn btn-sm btn-d" onclick="dRc('${r.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`;
+  }).join(''):'<div class="empty"><i class="ti ti-clipboard-list"></i>暂无进货记录，点击上方添加</div>';
+}
+
+// ===== 店铺资质 =====
+function rMrSl(){
+  const id=C.mid,l=D.lic[id]||{};
+  document.getElementById('m-slc').innerHTML=`
+    <div class="card">
+      <div class="ct"><i class="ti ti-license"></i>店铺营业执照</div>
+      <div class="fi"><label>统一社会信用代码</label><input id="s-bn" value="${l.bn||''}" placeholder="18位" oninput="aLic()"></div>
+      <div class="fi"><label>有效期至</label><input type="date" id="s-be" value="${l.be||''}" oninput="aLic()"></div>
+      <div class="uz" onclick="tf('s-fb')"><i class="ti ti-upload"></i>上传营业执照</div>
+      <input type="file" id="s-fb" accept="image/*,.pdf" style="display:none" onchange="hSF(this,'biz')">
+      <div id="s-pb" style="margin-top:8px">${l.bf&&l.bf.n?fpH(l.bf):''}</div>
+    </div>
+    <div class="card">
+      <div class="ct"><i class="ti ti-certificate"></i>食品经营许可证</div>
+      <div class="fi"><label>许可证编号</label><input id="s-pn" value="${l.pn||''}" placeholder="JY…" oninput="aLic()"></div>
+      <div class="fi"><label>有效期至</label><input type="date" id="s-pe" value="${l.pe||''}" oninput="aLic()"></div>
+      <div class="uz" onclick="tf('s-fp')"><i class="ti ti-upload"></i>上传食品经营许可证</div>
+      <input type="file" id="s-fp" accept="image/*,.pdf" style="display:none" onchange="hSF(this,'pm')">
+      <div id="s-pp" style="margin-top:8px">${l.pf&&l.pf.n?fpH(l.pf):''}</div>
+    </div>
+    <div class="card">
+      <div class="ct"><i class="ti ti-heart-rate-monitor"></i>员工健康证</div>
+      <div id="h-list">${rHL(id)}</div>
+      <button class="btn btn-sm" onclick="om('m-addh')" style="margin-top:8px"><i class="ti ti-plus"></i>添加员工</button>
+    </div>`;
+}
+
+function rHL(id){
+  const st=D.hlth[id]||[];
+  if(!st.length) return '<div style="font-size:13px;color:var(--g4);padding:6px 0">暂无员工，请点击添加</div>';
+  return st.map(h=>{
+    const ex=h.ex&&new Date(h.ex)<new Date();
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--g2)">
+      <div class="av">${h.n.charAt(0)}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:13px">${h.n} <span class="b b-g">${h.r}</span></div><div style="font-size:12px;color:var(--g4)">有效期至 ${h.ex||'—'} ${ex?'<span class="b b-e">已过期</span>':''}</div></div>
+      <div style="display:flex;gap:5px">${h.f&&h.f.n?`<button class="btn btn-sm" onclick="vF('${h.f.u}','${h.f.n}','${h.f.t}')"><i class="ti ti-eye"></i></button>`:''}<button class="btn btn-sm btn-d" onclick="dH('${h.id}')"><i class="ti ti-trash"></i></button></div>
+    </div>`;
+  }).join('');
+}
+
+function aLic(){
+  const id=C.mid;if(!D.lic[id])D.lic[id]={};const l=D.lic[id];
+  l.bn=document.getElementById('s-bn').value;l.be=document.getElementById('s-be').value;
+  l.pn=document.getElementById('s-pn').value;l.pe=document.getElementById('s-pe').value;
+  svD();
+}
+
+function hSF(inp,k){
+  const f=inp.files[0];if(!f)return;const isI=f.type.startsWith('image/');
+  const rd=new FileReader();rd.onload=e=>{
+    const id=C.mid;if(!D.lic[id])D.lic[id]={};
+    const fo={n:f.name,u:isI?e.target.result:'',t:isI?'img':'pdf'};
+    if(k==='biz'){D.lic[id].bf=fo;document.getElementById('s-pb').innerHTML=fpH(fo);}
+    else{D.lic[id].pf=fo;document.getElementById('s-pp').innerHTML=fpH(fo);}
+    svD();
+  };rd.readAsDataURL(f);
+}
+
+function savH(){
+  const n=document.getElementById('h-n').value.trim();if(!n){alert('请填写姓名');return;}
+  const id=C.mid;if(!D.hlth[id])D.hlth[id]=[];
+  D.hlth[id].push({id:'h'+Date.now(),n,r:document.getElementById('h-r').value,no:document.getElementById('h-no').value.trim(),ex:document.getElementById('h-ex').value,f:T['h-dc']||{n:'',u:'',t:''}});
+  svD();cm('m-addh');document.getElementById('h-list').innerHTML=rHL(id);
+}
+
+function dH(hid){
+  if(!confirm('删除该员工记录？'))return;const id=C.mid;
+  D.hlth[id]=(D.hlth[id]||[]).filter(h=>h.id!==hid);svD();
+  document.getElementById('h-list').innerHTML=rHL(id);
+}
+
+// ===== 本店供应商 =====
+function rMrSu(){
+  const s=D.ls[C.mid]||[];
+  document.getElementById('m-sul').innerHTML=s.length?s.map(x=>`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <div style="font-weight:600">${x.name}</div>
+        ${x.bz&&x.bz.n&&x.pm&&x.pm.n?'<span class="b b-ok">资质完整</span>':'<span class="b b-w">资质不全</span>'}
+      </div>
+      <div style="font-size:12px;color:var(--g4);margin-bottom:8px">${x.cat||'—'}${x.ex?' · 有效期至 '+x.ex:''}</div>
+      <div class="chips">${cF(x.bz,'ti-license','营业执照')}${cF(x.pm,'ti-certificate','生产许可')}</div>
+      <div style="text-align:right;margin-top:8px"><button class="btn btn-sm btn-d" onclick="dLS('${x.id}')"><i class="ti ti-trash"></i></button></div>
+    </div>`).join(''):'<div class="empty"><i class="ti ti-building-store"></i>暂无本店供应商</div>';
+}
+
+function savLS(){
+  const n=document.getElementById('ls-n').value.trim();if(!n){alert('请填写名称');return;}
+  const id=C.mid;if(!D.ls[id])D.ls[id]=[];
+  D.ls[id].push({id:'ls'+Date.now(),name:n,cat:document.getElementById('ls-ct').value.trim(),phone:document.getElementById('ls-ph').value.trim(),bz:T['ls-bz']||{n:'',u:'',t:''},pm:T['ls-pm']||{n:'',u:'',t:''},ex:document.getElementById('ls-ex').value});
+  svD();cm('m-addls');rMrSu();
+}
+
+function dLS(id){if(!confirm('删除？'))return;D.ls[C.mid]=(D.ls[C.mid]||[]).filter(s=>s.id!==id);svD();rMrSu();}
+
+// ===== 二维码 =====
+function rMrQR(){
+  const m=D.ms.find(x=>x.id===C.mid);
+  document.getElementById('qr-nm').textContent=m.name;
+  const tk=btoa(C.mid).replace(/=/g,'');
+  document.getElementById('qr-tk').textContent='访问码：'+tk;
+  const cv=document.getElementById('qr-cv'),ctx=cv.getContext('2d');ctx.clearRect(0,0,180,180);
+  try{
+    const tmp=document.createElement('div');
+    new QRCode(tmp,{text:location.href+'?s='+tk,width:180,height:180,colorDark:'#0A7C59',colorLight:'#fff'});
+    setTimeout(()=>{
+      const el=tmp.querySelector('canvas')||tmp.querySelector('img');
+      if(el&&el.tagName==='CANVAS')ctx.drawImage(el,0,0,180,180);
+      else if(el){const i=new Image();i.onload=()=>ctx.drawImage(i,0,0,180,180);i.src=el.src;}
+    },300);
+  }catch(e){}
+}
+
+function dlQR(){
+  const m=D.ms.find(x=>x.id===C.mid);
+  const a=document.createElement('a');
+  a.download=`食安公示二维码-${m.name}.png`;
+  a.href=document.getElementById('qr-cv').toDataURL('image/png');
+  a.click();
+}
+
+function pvPub(){C.pubPrev='mer';pubPg(C.mid);}
+
+// ===== 进货记录 Modal =====
+function oRec(){
+  RS={src:null,fid:null,rid:null,lsid:null};T={};
+  ['rec-fd','rec-dt','rec-qt','rec-pd','rec-mo','rec-bt','rec-cat'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+  document.getElementById('rec-ex-d').textContent='';
+  ['rec-pt','rec-pr'].forEach(i=>{const e=document.getElementById(i);if(e)e.innerHTML='';});
+  document.getElementById('rec-sc').checked=false;
+  document.getElementById('rec-cw').style.display='none';
+  document.getElementById('pl-a').style.display='none';
+  document.getElementById('lo-a').style.display='none';
+  document.getElementById('lk-box').style.display='none';
+  document.getElementById('r-pw').style.display='none';
+  document.querySelectorAll('#m-rec .sopt').forEach(o=>o.classList.remove('sel'));
+  document.querySelectorAll('#rec-sl .sl-b').forEach(b=>b.classList.remove('on'));
+  om('m-rec');
+}
+
+document.addEventListener('change',e=>{
+  if(e.target.id==='rec-sc') document.getElementById('rec-cw').style.display=e.target.checked?'block':'none';
+});
+
+function setRS(src){
+  RS.src=src;RS.fid=null;RS.rid=null;RS.lsid=null;
+  document.getElementById('src-pl').classList.toggle('sel',src==='pl');
+  document.getElementById('src-lo').classList.toggle('sel',src==='lo');
+  document.getElementById('pl-a').style.display=src==='pl'?'block':'none';
+  document.getElementById('lo-a').style.display=src==='lo'?'block':'none';
+  document.getElementById('lk-box').style.display='none';
+  document.getElementById('r-pw').style.display='none';
+  if(src==='pl'){document.getElementById('rec-mq').value='';rFPk();}
+  if(src==='lo') rLoPk();
+}
+
+function rFPk(){
+  const q=document.getElementById('rec-mq').value.toLowerCase();
+  document.getElementById('f-pk').innerHTML=D.fs.filter(f=>f.name.toLowerCase().includes(q)||(f.cat||'').toLowerCase().includes(q)).map(f=>`
+    <div class="sopt${RS.fid===f.id?' sel':''}" onclick="selF('${f.id}')">
+      <div><div style="font-size:13px;font-weight:600">${f.name}</div><div style="font-size:11px;color:var(--g4)">${f.cat||''} · ${(D.rpts[f.id]||[]).length}份报告</div></div>
+      ${RS.fid===f.id?'<i class="ti ti-check" style="color:var(--green)"></i>':''}
+    </div>`).join('')||'<div style="font-size:12px;color:var(--g4);padding:6px">未找到匹配厂家</div>';
+}
+
+function selF(id){
+  RS.fid=id;RS.rid=null;rFPk();
+  const rpts=D.rpts[id]||[];
+  document.getElementById('r-pw').style.display='block';
+  document.getElementById('r-pk').innerHTML=rpts.map(r=>`
+    <div class="sopt${RS.rid===r.id?' sel':''}" onclick="selR('${r.id}')">
+      <div><div style="font-size:13px;font-weight:600">${r.prod}</div><div style="font-size:11px;color:var(--g4)">生产：${r.pd} · <span style="color:${r.rs==='pass'?'var(--green)':'var(--red)'}">${r.rs==='pass'?'合格':'不合格'}</span></div></div>
+      ${RS.rid===r.id?'<i class="ti ti-check" style="color:var(--green)"></i>':''}
+    </div>`).join('')||'<div style="font-size:12px;color:var(--g4);padding:6px">该厂家暂无报告</div>';
+}
+
+function selR(id){
+  RS.rid=id;selF(RS.fid);
+  const f=D.fs.find(x=>x.id===RS.fid);
+  const r=(D.rpts[RS.fid]||[]).find(x=>x.id===id);
+  shLk(f,r);
+  if(r){
+    if(r.prod&&!document.getElementById('rec-fd').value) document.getElementById('rec-fd').value=r.prod;
+    if(r.pd){document.getElementById('rec-pd').value=r.pd;if(r.ed)document.getElementById('rec-ex-d').textContent='→ 保质期至：'+r.ed;}
+    if(r.bt&&!document.getElementById('rec-bt').value) document.getElementById('rec-bt').value=r.bt;
+  }
+}
+
+function rLoPk(){
+  const s=D.ls[C.mid]||[];
+  document.getElementById('lo-pk').innerHTML=s.length?s.map(x=>`
+    <div class="sopt${RS.lsid===x.id?' sel':''}" onclick="selLS('${x.id}')">
+      <div><div style="font-size:13px;font-weight:600">${x.name}</div><div style="font-size:11px;color:var(--g4)">${x.cat||''}</div></div>
+      ${RS.lsid===x.id?'<i class="ti ti-check" style="color:var(--green)"></i>':''}
+    </div>`).join(''):'<div style="font-size:12px;color:var(--g4);padding:6px">暂无本店供应商，请先在"本店供应商"标签添加</div>';
+}
+
+function selLS(id){
+  RS.lsid=id;rLoPk();
+  const s=(D.ls[C.mid]||[]).find(x=>x.id===id);
+  shLk(s,null);
+}
+
+function shLk(sup,rpt){
+  document.getElementById('lk-box').style.display='block';
+  document.getElementById('lk-n').textContent=sup.name;
+  const docs=[];
+  const bz=sup.bz;const pm=sup.pm;
+  if(bz&&bz.n) docs.push('<i class="ti ti-check"></i> 营业执照已存档');
+  if(pm&&pm.n) docs.push('<i class="ti ti-check"></i> 生产许可证已存档');
+  if(rpt&&rpt.f&&rpt.f.n) docs.push(`<i class="ti ti-check"></i> 检测报告：${rpt.prod} (${rpt.pd})`);
+  document.getElementById('lk-d').innerHTML=docs.join('<br>')||'暂无存档文件';
+}
+
+function savRc(){
+  const fd=document.getElementById('rec-fd').value.trim();
+  const dt=document.getElementById('rec-dt').value;
+  if(!fd||!dt){alert('请填写食品名称和进货日期');return;}
+  const id=C.mid;if(!D.rcs[id])D.rcs[id]=[];
+  const pd=document.getElementById('rec-pd').value;
+  const mo=+document.getElementById('rec-mo').value||0;
+  D.rcs[id].unshift({
+    id:'rc'+Date.now(),st:RS.src,sid:RS.src==='pl'?RS.fid:RS.lsid,
+    rid:RS.rid,fd,dt,qt:document.getElementById('rec-qt').value.trim(),
+    pd,ed:mo?cED(pd,mo,0):'',bt:document.getElementById('rec-bt').value.trim(),
+    sc:document.getElementById('rec-sc').checked,cat:document.getElementById('rec-cat').value.trim(),
+    tf:T['rec-ts']||null,rf:T['rec-rc']||null
+  });
+  svD();cm('m-rec');rMrRc();
+}
+
+function dRc(id){if(!confirm('确认删除？'))return;D.rcs[C.mid]=(D.rcs[C.mid]||[]).filter(r=>r.id!==id);svD();rMrRc();}
+
+// ===== 保质期 =====
+function slP(ns,mo){
+  const bts=ns==='r'?document.querySelectorAll('#m-addr .sl-b'):document.querySelectorAll('#rec-sl .sl-b');
+  bts.forEach(b=>b.classList.remove('on'));event.currentTarget.classList.add('on');
+  if(ns==='r'){document.getElementById('r-mo').value=mo;document.getElementById('r-dy').value='';cREx();}
+  else{document.getElementById('rec-mo').value=mo;cRcEx();}
+}
+function cED(s,mo,dy){if(!s)return '';const d=new Date(s);if(mo)d.setMonth(d.getMonth()+mo);if(dy)d.setDate(d.getDate()+dy);return d.toISOString().substring(0,10);}
+function cREx(){const d=document.getElementById('r-dt').value,m=+document.getElementById('r-mo').value||0,dy=+document.getElementById('r-dy').value||0;document.getElementById('r-ex-d').textContent=cED(d,m,dy)?'保质期至：'+cED(d,m,dy):'';}
+function cRcEx(){const d=document.getElementById('rec-pd').value,m=+document.getElementById('rec-mo').value||0;document.getElementById('rec-ex-d').textContent=cED(d,m,0)?'→ 保质期至：'+cED(d,m,0):'';}
+
+// ===== 公示端 =====
+function rPubSel(){
+  document.getElementById('pub-sl').innerHTML=D.ms.map(m=>`
+    <div class="li" onclick="C.pubPrev='pub-sel';pubPg('${m.id}')">
+      <div class="li-t">${m.name}</div>
+      <div class="li-s">${m.code||'—'} · ${m.type}</div>
+    </div>`).join('');
+}
+
+function pubPg(mid){
+  C.pubMid=mid;const m=D.ms.find(x=>x.id===mid);
+  document.getElementById('pub-nm').textContent=m.name;
+  document.getElementById('pub-mt').textContent=`${m.code||''} · 泰安爱琴海购物公园`;
+  document.getElementById('pub-q').value='';
+  go('pub');
+  const l=D.lic[mid]||{};
+  document.getElementById('pub-biz').innerHTML=l.bn||l.bf?`
+    <div class="pub-r"><span class="pub-rl">证件编号</span><span>${l.bn||'—'}</span></div>
+    <div class="pub-r"><span class="pub-rl">有效期至</span><span>${l.be||'—'}</span></div>
+    ${l.bf&&l.bf.n?`<div class="pub-r"><div class="chip c-ok" onclick="vF('${l.bf.u}','${l.bf.n}','${l.bf.t}')"><i class="ti ti-license"></i>查看营业执照</div></div>`:''}`:
+    '<div class="pub-r" style="color:var(--g4)">暂未上传</div>';
+  document.getElementById('pub-pm').innerHTML=l.pn||l.pf?`
+    <div class="pub-r"><span class="pub-rl">许可证编号</span><span>${l.pn||'—'}</span></div>
+    <div class="pub-r"><span class="pub-rl">有效期至</span><span>${l.pe||'—'}</span></div>
+    ${l.pf&&l.pf.n?`<div class="pub-r"><div class="chip c-ok" onclick="vF('${l.pf.u}','${l.pf.n}','${l.pf.t}')"><i class="ti ti-certificate"></i>查看许可证</div></div>`:''}`:
+    '<div class="pub-r" style="color:var(--g4)">暂未上传</div>';
+  const st=D.hlth[mid]||[];
+  document.getElementById('pub-hl').innerHTML=st.length?st.map(h=>{
+    const ex=h.ex&&new Date(h.ex)<new Date();
+    return `<div class="pub-r" style="align-items:flex-start">
+      <div style="display:flex;align-items:center;gap:10px;flex:1">
+        <div class="av">${h.n.charAt(0)}</div>
+        <div><div style="font-weight:600">${h.n} <span class="b b-g">${h.r}</span></div><div style="font-size:12px;color:var(--g4)">有效期至 ${h.ex||'—'} ${ex?'<span class="b b-e">已过期</span>':''}</div></div>
+      </div>
+      ${h.f&&h.f.n?`<div class="chip c-ok" onclick="vF('${h.f.u}','${h.f.n}','${h.f.t}')"><i class="ti ti-id-badge"></i>健康证</div>`:''}
+    </div>`;
+  }).join(''):'<div class="pub-r" style="color:var(--g4)">暂未录入</div>';
+  rPubR();
+}
+
+function rPubR(){
+  const mid=C.pubMid,q=(document.getElementById('pub-q').value||'').toLowerCase();
+  const rc=(D.rcs[mid]||[]).filter(r=>{
+    if(!q) return true;
+    const sn=gSN(mid,r).toLowerCase();
+    return (r.sc?r.cat:r.fd).toLowerCase().includes(q)||sn.includes(q)||(r.dt||'').includes(q)||(r.bt||'').toLowerCase().includes(q);
+  });
+  document.getElementById('pub-rcl').innerHTML=rc.length?rc.map(r=>{
+    const sc=r.sc,dn=sc?`<span class="b b-s"><i class="ti ti-eye-off"></i>保密</span> ${r.cat||'此类食品'}`:r.fd;
+    const sn=sc?'—':gSN(mid,r),lr=sc?null:gLR(r);
+    const mf=r.st==='pl'&&!sc?D.fs.find(x=>x.id===r.sid):null;
+    return `<div class="rcc">
+      <div class="rcc-t">${dn}</div>
+      <div style="font-size:12px;color:var(--g5);line-height:2;margin-bottom:8px">
+        <div>进货日期：${r.dt}${r.qt?' · 数量：'+r.qt:''}</div>
+        ${!sc?`<div>供应商：${sn}</div>`:''}
+        ${r.ed&&!sc?`<div>保质期至：${r.ed}</div>`:''}
+      </div>
+      ${!sc?`<div class="chips">
+        ${mf&&mf.bz&&mf.bz.n?`<div class="chip c-ok" onclick="vF('${mf.bz.u}','${mf.bz.n}','${mf.bz.t}')"><i class="ti ti-license"></i>厂家营业执照</div>`:''}
+        ${mf&&mf.pm&&mf.pm.n?`<div class="chip c-ok" onclick="vF('${mf.pm.u}','${mf.pm.n}','${mf.pm.t}')"><i class="ti ti-certificate"></i>生产许可证</div>`:''}
+        ${lr&&lr.f&&lr.f.n?`<div class="chip c-ok" onclick="vF('${lr.f.u}','${lr.f.n}','${lr.f.t}')"><i class="ti ti-flask"></i>检测报告</div>`:r.tf&&r.tf.n?`<div class="chip c-ok" onclick="vF('${r.tf.u}','${r.tf.n}','${r.tf.t}')"><i class="ti ti-flask"></i>检测报告</div>`:''}
+        ${r.rf&&r.rf.n?`<div class="chip c-ok" onclick="vF('${r.rf.u}','${r.rf.n}','${r.rf.t}')"><i class="ti ti-receipt"></i>台账凭证</div>`:''}
+      </div>`:`<div class="al al-w" style="margin-top:4px;font-size:11px"><i class="ti ti-shield-lock"></i>该食材已通过合规审查，供应商信息保密处理</div>`}
+    </div>`;
+  }).join(''):q?`<div style="padding:16px;font-size:13px;color:var(--g4);text-align:center">未找到"${q}"相关记录</div>`:'<div style="padding:16px;font-size:13px;color:var(--g4)">暂无进货台账记录</div>';
+}
+
+// ===== 通用工具 =====
+function gSN(mid,r){
+  if(r.st==='pl'){const f=D.fs.find(x=>x.id===r.sid);return f?f.name:'—';}
+  if(r.st==='lo'){const s=(D.ls[mid]||[]).find(x=>x.id===r.sid);return s?s.name:'—';}
+  return '—';
+}
+function gLR(r){if(!r.rid||!r.sid)return null;return(D.rpts[r.sid]||[]).find(x=>x.id===r.rid)||null;}
+function rcOk(mid,r){
+  const hS=r.sid&&(r.st==='pl'?D.fs.find(x=>x.id===r.sid):(D.ls[mid]||[]).find(x=>x.id===r.sid));
+  const hR=!!gLR(r)||(r.tf&&r.tf.n);
+  return !!(hS&&hR&&r.rf&&r.rf.n);
+}
+function sBzC(mid,r){
+  const f=r.st==='pl'?D.fs.find(x=>x.id===r.sid):null;
+  const s=r.st==='lo'?(D.ls[mid]||[]).find(x=>x.id===r.sid):null;
+  const bz=f&&f.bz||s&&s.bz;
+  if(bz&&bz.n) return `<div class="chip c-ok" onclick="vF('${bz.u}','${bz.n}','${bz.t}')"><i class="ti ti-license"></i>营业执照</div>`;
+  return '<div class="chip c-ms"><i class="ti ti-alert-circle"></i>营业执照缺</div>';
+}
+function sPmC(mid,r){
+  const f=r.st==='pl'?D.fs.find(x=>x.id===r.sid):null;
+  const s=r.st==='lo'?(D.ls[mid]||[]).find(x=>x.id===r.sid):null;
+  const pm=f&&f.pm||s&&s.pm;
+  if(pm&&pm.n) return `<div class="chip c-ok" onclick="vF('${pm.u}','${pm.n}','${pm.t}')"><i class="ti ti-certificate"></i>生产许可</div>`;
+  return '<div class="chip c-ms"><i class="ti ti-alert-circle"></i>生产许可缺</div>';
+}
+function cF(f,ic,lbl){
+  if(f&&f.n) return `<div class="chip c-ok" onclick="vF('${f.u}','${f.n}','${f.t}')"><i class="ti ${ic}"></i>${lbl}</div>`;
+  return `<div class="chip c-ms"><i class="ti ti-alert-circle"></i>${lbl}未上传</div>`;
+}
+function fpH(f){
+  if(!f||!f.n) return '';
+  if(f.t==='img'&&f.u) return `<img src="${f.u}" style="height:52px;border-radius:6px;border:1px solid var(--g2);cursor:pointer" onclick="vF('${f.u}','${f.n}','img')">`;
+  return `<span class="chip c-ok" style="cursor:pointer" onclick="vF('','${f.n}','pdf')"><i class="ti ti-file-check"></i>${f.n}</span>`;
+}
+function tf(id){document.getElementById(id).click();}
+function hF(inp,sk,pv){
+  const f=inp.files[0];if(!f)return;const isI=f.type.startsWith('image/');
+  const rd=new FileReader();rd.onload=e=>{
+    const u=e.target.result;T[sk]={n:f.name,u:isI?u:'',t:isI?'img':'pdf'};
+    const el=document.getElementById(pv);
+    if(el) el.innerHTML=isI?`<img src="${u}" style="height:52px;border-radius:6px;border:1px solid var(--g2)">`:`<span class="chip c-ok"><i class="ti ti-file-check"></i>${f.name}</span>`;
+  };rd.readAsDataURL(f);
+}
+function vF(u,n,t){
+  const img=document.getElementById('vf-i'),pdf=document.getElementById('vf-p');
+  if(t==='img'&&u){img.src=u;img.style.display='block';pdf.style.display='none';}
+  else{img.style.display='none';pdf.style.display='block';document.getElementById('vf-n').textContent=n;}
+  om('m-vf');
+}
+function om(id){document.getElementById(id).classList.remove('h');}
+function cm(id){document.getElementById(id).classList.add('h');}
+function toast(msg){
+  const t=document.createElement('div');
+  t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--g7);color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;max-width:80vw;text-align:center';
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>t.style.opacity='1',10);
+  setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);},3000);
+}
+</script>
+</body>
+</html>
