@@ -1,0 +1,2511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>食安链 - 食品安全公示平台</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+<style>
+:root {
+  --gr:#0A7C59;--gd:#086b4c;--gl:#E6F4F1;--gm:#8FCFB7;
+  --rd:#E53935;--or:#F57C00;--bl:#1976D2;
+  --g5:#555;--g4:#888;--g3:#bbb;--g2:#e8e8e8;--g1:#f6f6f6;--w:#fff;
+  --r:8px;--r2:12px;--sh:0 2px 12px rgba(0,0,0,0.08);--sh2:0 4px 20px rgba(0,0,0,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:var(--g1);color:#333;line-height:1.5;font-size:14px;}
+.h{display:none!important;}
+/* 按钮 */
+.btn{border:none;border-radius:var(--r);padding:9px 14px;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:5px;transition:.15s;font-family:inherit;}
+.btn-p{background:var(--gr);color:var(--w);}
+.btn-p:hover{background:var(--gd);}
+.btn-p:active{transform:scale(.97);}
+.btn-s{background:var(--w);border:1px solid var(--g2);color:#333;}
+.btn-s:hover{background:var(--g1);}
+.btn-danger{background:var(--rd);color:var(--w);}
+.btn-bl{width:100%;}
+.btn-sm{padding:6px 10px;font-size:12px;}
+.btn-icon{background:none;border:none;cursor:pointer;color:var(--g4);padding:4px;font-size:16px;}
+/* 表单 */
+.card{background:var(--w);border-radius:var(--r2);box-shadow:var(--sh);padding:16px;}
+.form-item{margin-bottom:12px;}
+.form-label{font-size:13px;margin-bottom:5px;display:block;color:var(--g5);}
+.form-input{width:100%;padding:10px 12px;border:1px solid var(--g2);border-radius:var(--r);font-size:14px;font-family:inherit;background:var(--w);}
+.form-input:focus{outline:none;border-color:var(--gr);}
+select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
+.input-group{position:relative;}
+.input-group .eye-btn{position:absolute;right:4px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--g4);padding:6px;}
+.form-hint{font-size:11px;color:var(--g4);margin-top:4px;}
+.msg-err{font-size:12px;color:var(--rd);margin-top:5px;display:none;}
+/* 标签页 */
+.itabs{display:flex;gap:0;padding:0 12px;overflow-x:auto;scrollbar-width:none;background:var(--w);border-bottom:1px solid var(--g2);position:sticky;top:52px;z-index:90;}
+.itabs::-webkit-scrollbar{display:none;}
+.itab{white-space:nowrap;padding:12px 14px;cursor:pointer;color:var(--g4);border-bottom:2px solid transparent;font-size:13px;position:relative;}
+.itab.on{color:var(--gr);border-color:var(--gr);font-weight:500;}
+.pane{display:none;padding:12px;}
+.pane.on{display:block;}
+/* 顶栏 */
+.header{background:var(--gr);padding:0 16px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.header-title{color:var(--w);font-size:16px;font-weight:600;}
+.header-right{display:flex;align-items:center;gap:8px;}
+.logout-btn{background:rgba(255,255,255,.2);border:none;color:var(--w);padding:6px 10px;border-radius:var(--r);cursor:pointer;font-size:12px;}
+/* 弹窗 */
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;z-index:999;}
+.modal-c{background:var(--w);border-radius:16px 16px 0 0;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;}
+.modal-h{padding:16px;border-bottom:1px solid var(--g2);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--w);z-index:1;}
+.modal-h h3{font-size:16px;}
+.modal-b{padding:16px;}
+.modal-f{padding:12px 16px;border-top:1px solid var(--g2);display:flex;gap:8px;justify-content:flex-end;position:sticky;bottom:0;background:var(--w);}
+/* 列表 */
+.list{display:flex;flex-direction:column;gap:8px;}
+.item{background:var(--w);border-radius:var(--r);box-shadow:var(--sh);padding:12px 14px;}
+.item-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.item-title{font-weight:500;font-size:14px;}
+.item-sub{font-size:12px;color:var(--g4);margin-top:3px;}
+.item-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+/* 标签 */
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+.tag-pending{background:#FFF3E0;color:#E65100;}
+.tag-pass{background:#E8F5E9;color:#2E7D32;}
+.tag-reject{background:#FFEBEE;color:#C62828;}
+.tag-grey{background:var(--g1);color:var(--g4);}
+.tag-blue{background:#E3F2FD;color:#1565C0;}
+.tag-secret{background:#F3E5F5;color:#6A1B9A;}
+/* 红点 */
+.badge{position:absolute;top:6px;right:4px;background:var(--rd);color:var(--w);font-size:10px;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+/* 统计 */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+.stat-card{background:var(--w);border-radius:var(--r2);padding:14px;box-shadow:var(--sh);}
+.stat-num{font-size:22px;font-weight:600;color:var(--gr);}
+.stat-label{font-size:12px;color:var(--g4);margin-top:2px;}
+/* 登录页 */
+.sc{display:none;}
+.sc.on{display:block;}
+.p-login{min-height:100vh;background:linear-gradient(160deg,#0A7C59 0%,#0d9e73 60%,#E6F4F1 100%);display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-card{background:var(--w);border-radius:20px;width:100%;max-width:400px;padding:28px;box-shadow:0 8px 40px rgba(0,0,0,.15);}
+.p-logo{text-align:center;margin-bottom:24px;}
+.p-logo-icon{width:56px;height:56px;background:var(--gr);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;color:var(--w);font-size:28px;}
+.p-logo h2{font-size:20px;color:#222;margin-bottom:2px;}
+.p-logo p{font-size:12px;color:var(--g4);}
+.role-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px;}
+.role-btn{padding:10px 4px;text-align:center;border-radius:var(--r);background:var(--g1);cursor:pointer;border:2px solid transparent;transition:.15s;}
+.role-btn.on{background:var(--gl);border-color:var(--gr);color:var(--gr);}
+.role-btn .role-icon{font-size:18px;margin-bottom:3px;}
+.role-btn .role-name{font-size:11px;font-weight:500;}
+.role-desc-txt{font-size:12px;color:var(--g4);text-align:center;margin-bottom:14px;min-height:16px;}
+/* 警告 */
+.alert{border-radius:var(--r);padding:10px 12px;font-size:13px;display:flex;align-items:center;gap:8px;}
+.alert-warn{background:#FFF8E1;color:#F57F17;}
+.alert-err{background:#FFEBEE;color:#C62828;}
+.alert-ok{background:#E8F5E9;color:#2E7D32;}
+/* 上传区 */
+.upload-area{border:1.5px dashed var(--g3);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer;color:var(--g4);}
+.upload-area:hover{border-color:var(--gm);background:var(--gl);}
+/* 进度/分割 */
+.divider{height:1px;background:var(--g2);margin:12px 0;}
+.section-title{font-size:13px;font-weight:600;color:var(--g5);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+/* 公示页专用 */
+.pub-header{background:var(--gr);color:var(--w);padding:20px 16px;text-align:center;}
+.pub-section{background:var(--w);margin:10px;border-radius:var(--r2);padding:16px;box-shadow:var(--sh);}
+.cert-card{border:1px solid var(--g2);border-radius:var(--r);padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
+.cert-icon{width:40px;height:40px;background:var(--gl);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--gr);font-size:20px;flex-shrink:0;}
+/* 空状态 */
+.empty{text-align:center;padding:40px 20px;color:var(--g3);}
+.empty i{font-size:48px;display:block;margin-bottom:10px;}
+/* 搜索栏 */
+.search-bar{display:flex;gap:8px;margin-bottom:12px;}
+.search-bar .form-input{flex:1;}
+/* 资质预警 */
+.expire-warn{background:#FFF3E0;border-left:3px solid var(--or);border-radius:0 var(--r) var(--r) 0;padding:10px 12px;margin-bottom:8px;}
+.expire-ok{background:#E8F5E9;border-left:3px solid #4CAF50;border-radius:0 var(--r) var(--r) 0;padding:10px 12px;margin-bottom:8px;}
+</style>
+</head>
+<body>
+
+<!-- ====== 登录页 ====== -->
+<div id="sc-login" class="sc on">
+<div class="p-login">
+<div class="login-card">
+  <div class="p-logo">
+    <div class="p-logo-icon"><i class="ti ti-shield-check"></i></div>
+    <h2>食安链</h2>
+    <p>全国食品安全公示与溯源平台</p>
+  </div>
+  <div class="role-grid" id="role-grid">
+    <div class="role-btn on" onclick="setRole('mer',this)"><div class="role-icon">🏪</div><div class="role-name">商户端</div></div>
+    <div class="role-btn" onclick="setRole('sup',this)"><div class="role-icon">🚚</div><div class="role-name">供应商</div></div>
+    <div class="role-btn" onclick="setRole('mfr',this)"><div class="role-icon">🏭</div><div class="role-name">生产厂家</div></div>
+    <div class="role-btn" onclick="setRole('op',this)"><div class="role-icon">🏛️</div><div class="role-name">市场监管</div></div>
+  </div>
+  <div class="role-desc-txt" id="role-desc">商户端 - 进货台账、资质公示管理</div>
+  <div class="form-item">
+    <label class="form-label" id="l-lbl">手机号 / 企业名称</label>
+    <input class="form-input" id="l-inp" type="text" placeholder="手机号或企业名称均可登录" maxlength="50">
+  </div>
+  <div class="form-item">
+    <label class="form-label">密码</label>
+    <div class="input-group">
+      <input class="form-input" id="l-pw" type="password" placeholder="请输入密码">
+      <button class="eye-btn" onclick="togglePw('l-pw',this)" type="button"><i class="ti ti-eye"></i></button>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
+      <input type="checkbox" id="l-remember"> 记住账号密码
+    </label>
+    <button class="btn btn-s btn-sm" onclick="showModal('reset-pw-modal')" type="button">忘记密码</button>
+  </div>
+  <div class="msg-err" id="l-msg" style="display:none;margin-bottom:8px;"></div>
+  <button class="btn btn-p btn-bl" style="padding:13px;" onclick="doLogin()" type="button">登 录</button>
+  <div style="text-align:center;margin-top:14px;font-size:13px;color:var(--g4);">
+    没有账号？<button class="btn" style="padding:0;color:var(--gr);font-size:13px;" onclick="showModal('reg-modal')" type="button">立即注册</button>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- ====== 商户端 ====== -->
+<div id="sc-mer" class="sc">
+<div class="header">
+  <div class="header-title">🏪 <span id="mer-shop-name">商户端</span></div>
+  <div class="header-right">
+    <button class="logout-btn" onclick="logout()">退出</button>
+  </div>
+</div>
+<div class="itabs" id="mer-tabs">
+  <div class="itab on" onclick="mT('overview',this)">总览</div>
+  <div class="itab" onclick="mT('ledger',this)">进货台账</div>
+  <div class="itab" onclick="mT('order',this)">要货申请</div>
+  <div class="itab" id="mer-receive-tab" onclick="mT('receive',this)">待收货</div>
+  <div class="itab" onclick="mT('suppliers',this)">供应商库</div>
+  <div class="itab" onclick="mT('qual',this)">店铺资质</div>
+  <div class="itab" onclick="mT('qrcode',this)">二维码</div>
+  <div class="itab" onclick="mT('invite',this)">邀请入驻</div>
+</div>
+
+<!-- 总览 -->
+<div class="pane on" id="m-overview">
+  <div class="stats" id="mer-stats"></div>
+  <div class="card" id="mer-qual-warn"></div>
+</div>
+
+<!-- 进货台账 -->
+<div class="pane" id="m-ledger">
+  <div class="search-bar">
+    <input class="form-input" id="ledger-search" placeholder="搜索品名/供应商..." oninput="renderLedger()">
+    <button class="btn btn-p" onclick="showModal('add-ledger-modal')"><i class="ti ti-plus"></i> 补充入账</button>
+  </div>
+  <div class="list" id="ledger-list"></div>
+</div>
+
+<!-- 要货申请 -->
+<div class="pane" id="m-order">
+  <div style="margin-bottom:10px;">
+    <button class="btn btn-p" onclick="showModal('add-order-modal')"><i class="ti ti-plus"></i> 发起要货申请</button>
+  </div>
+  <div class="list" id="order-list"></div>
+</div>
+
+<!-- 待收货 -->
+<div class="pane" id="m-receive">
+  <div class="list" id="receive-list"></div>
+</div>
+
+<!-- 供应商库 -->
+<div class="pane" id="m-suppliers">
+  <div style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap;">
+    <button class="btn btn-p" onclick="showModal('add-supplier-modal')"><i class="ti ti-plus"></i> 手动添加</button>
+    <button class="btn btn-s" onclick="showModal('link-sup-modal')"><i class="ti ti-link"></i> 关联平台供应商</button>
+    <button class="btn btn-s" onclick="showModal('link-mfr-modal')"><i class="ti ti-building-factory-2"></i> 直接关联厂家</button>
+  </div>
+  <div class="list" id="mer-suppliers-list"></div>
+</div>
+
+<!-- 店铺资质 -->
+<div class="pane" id="m-qual">
+  <div style="margin-bottom:10px;">
+    <button class="btn btn-p" onclick="showModal('add-qual-modal')"><i class="ti ti-plus"></i> 添加证件</button>
+  </div>
+  <div id="mer-qual-list"></div>
+</div>
+
+<!-- 二维码 -->
+<div class="pane" id="m-qrcode">
+  <div class="card" style="text-align:center;">
+    <canvas id="qr-cv" width="200" height="200" style="margin:0 auto;display:block;"></canvas>
+    <div id="qr-nm" style="margin-top:12px;font-weight:600;font-size:16px;"></div>
+    <div id="qr-url" style="font-size:11px;color:var(--g4);margin-top:4px;word-break:break-all;padding:0 10px;"></div>
+    <div style="margin-top:16px;display:flex;gap:8px;justify-content:center;">
+      <button class="btn btn-p" onclick="dlQR()"><i class="ti ti-download"></i> 下载二维码</button>
+      <button class="btn btn-s" onclick="pvPub()"><i class="ti ti-eye"></i> 预览公示</button>
+    </div>
+  </div>
+</div>
+
+<!-- 邀请入驻 -->
+<div class="pane" id="m-invite">
+  <div class="card">
+    <div class="section-title"><i class="ti ti-user-plus"></i> 邀请供应商/厂家入驻</div>
+    <div class="form-item">
+      <label class="form-label">邀请对象</label>
+      <select class="form-input" id="invite-type">
+        <option value="sup">供应商</option>
+        <option value="mfr">生产厂家</option>
+      </select>
+    </div>
+    <button class="btn btn-p" onclick="genInvite()"><i class="ti ti-link"></i> 生成邀请链接</button>
+    <div id="invite-result" style="margin-top:14px;display:none;">
+      <div class="form-item">
+        <label class="form-label">邀请链接</label>
+        <div style="display:flex;gap:8px;">
+          <input class="form-input" id="invite-link" readonly>
+          <button class="btn btn-s" onclick="copyInvite()"><i class="ti ti-copy"></i></button>
+        </div>
+      </div>
+      <div class="alert alert-ok" style="margin-top:8px;">
+        <i class="ti ti-brand-wechat"></i>
+        <span>微信分享：复制链接后，在微信中粘贴发送给对方，对方点击链接即可完成注册并关联到您的店铺。</span>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ====== 供应商端 ====== -->
+<div id="sc-sup" class="sc">
+<div class="header">
+  <div class="header-title">🚚 <span id="sup-name-hd">供应商端</span></div>
+  <div class="header-right"><button class="logout-btn" onclick="logout()">退出</button></div>
+</div>
+<div class="itabs">
+  <div class="itab on" onclick="supT('order',this)">要货申请</div>
+  <div class="itab" onclick="supT('ship',this)">主动发货</div>
+  <div class="itab" onclick="supT('products',this)">我的产品</div>
+  <div class="itab" onclick="supT('mfrs',this)">关联厂家</div>
+  <div class="itab" onclick="supT('mers',this)">关联商户</div>
+  <div class="itab" onclick="supT('qual',this)">供应商资质</div>
+</div>
+<div class="pane on" id="sup-order">
+  <div class="list" id="sup-order-list"></div>
+</div>
+<div class="pane" id="sup-ship">
+  <div style="margin-bottom:10px;">
+    <button class="btn btn-p" onclick="showModal('add-ship-modal')"><i class="ti ti-truck"></i> 发起发货通知</button>
+  </div>
+  <div class="list" id="sup-ship-list"></div>
+</div>
+<div class="pane" id="sup-products">
+  <div style="margin-bottom:10px;">
+    <button class="btn btn-p" onclick="showModal('add-product-modal')"><i class="ti ti-plus"></i> 新增产品</button>
+  </div>
+  <div class="list" id="sup-products-list"></div>
+</div>
+<div class="pane" id="sup-mfrs">
+  <div style="margin-bottom:10px;">
+    <button class="btn btn-p" onclick="showModal('link-mfr2-modal')"><i class="ti ti-plus"></i> 关联厂家</button>
+  </div>
+  <div class="list" id="sup-mfrs-list"></div>
+</div>
+<div class="pane" id="sup-mers">
+  <div class="list" id="sup-mers-list"></div>
+</div>
+<div class="pane" id="sup-qual">
+  <div style="margin-bottom:10px;">
+    <button class="btn btn-p" onclick="showModal('add-sup-qual-modal')"><i class="ti ti-plus"></i> 添加证件</button>
+  </div>
+  <div id="sup-qual-list"></div>
+</div>
+</div>
+
+<!-- ====== 生产厂家 ====== -->
+<div id="sc-mfr" class="sc">
+<div class="header">
+  <div class="header-title">🏭 <span id="mfr-name-hd">生产厂家</span></div>
+  <div class="header-right"><button class="logout-btn" onclick="logout()">退出</button></div>
+</div>
+<div class="itabs">
+  <div class="itab on" onclick="mfrT('reports',this)">检测报告</div>
+  <div class="itab" onclick="mfrT('ship',this)">发货管理</div>
+  <div class="itab" onclick="mfrT('sups',this)">关联供应商</div>
+  <div class="itab" onclick="mfrT('qual',this)">厂家资质</div>
+</div>
+<div class="pane on" id="mfr-reports">
+  <div style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap;">
+    <button class="btn btn-p" onclick="showModal('add-report-modal')"><i class="ti ti-plus"></i> 上传报告</button>
+    <button class="btn btn-s" onclick="showModal('batch-report-modal')"><i class="ti ti-files"></i> 批量上传</button>
+  </div>
+  <div class="search-bar" style="margin-bottom:10px;">
+    <input class="form-input" id="mfr-report-search" placeholder="按品名或日期搜索..." oninput="renderMfrReports()">
+  </div>
+  <div class="list" id="mfr-reports-list"></div>
+</div>
+<div class="pane" id="mfr-ship">
+  <div style="margin-bottom:10px;">
+    <button class="btn btn-p" onclick="showModal('add-mfr-ship-modal')"><i class="ti ti-truck"></i> 新增发货</button>
+  </div>
+  <div class="list" id="mfr-ship-list"></div>
+</div>
+<div class="pane" id="mfr-sups">
+  <div style="margin-bottom:10px;display:flex;gap:6px;flex-wrap:wrap;">
+    <button class="btn btn-p btn-sm" id="mfr-link-tab-sup" onclick="switchMfrLinkTab('sup')">关联供应商</button>
+    <button class="btn btn-s btn-sm" id="mfr-link-tab-mer" onclick="switchMfrLinkTab('mer')">关联商户（直发）</button>
+  </div>
+  <div class="search-bar"><input class="form-input" id="mfr-link-search" placeholder="搜索名称..." oninput="renderMfrLinkList()"></div>
+  <div class="list" id="mfr-sups-list"></div>
+</div>
+<div class="pane" id="mfr-qual">
+  <div style="margin-bottom:10px;">
+    <button class="btn btn-p" onclick="showModal('add-mfr-qual-modal')"><i class="ti ti-plus"></i> 添加证件</button>
+  </div>
+  <div id="mfr-qual-list"></div>
+</div>
+</div>
+
+<!-- ====== 市场监管 ====== -->
+<div id="sc-op" class="sc">
+<div class="header">
+  <div class="header-title">🏛️ 市场监管端</div>
+  <div class="header-right"><button class="logout-btn" onclick="logout()">退出</button></div>
+</div>
+<div class="itabs">
+  <div class="itab on" onclick="opT('overview',this)">总览</div>
+  <div class="itab" onclick="opT('mers',this)">商户管理</div>
+  <div class="itab" onclick="opT('sups',this)">供应商</div>
+  <div class="itab" onclick="opT('mfrs',this)">生产厂家</div>
+  <div class="itab" id="op-audit-tab" onclick="opT('audit',this)">待审核</div>
+</div>
+<div class="pane on" id="op-overview">
+  <div class="stats" id="op-stats"></div>
+  <div class="section-title" style="padding:0 0 4px;"><i class="ti ti-alert-triangle"></i> 证件到期预警</div>
+  <div id="op-qual-warns"></div>
+</div>
+<div class="pane" id="op-mers">
+  <div class="search-bar">
+    <input class="form-input" id="op-mer-search" placeholder="搜索商户名称..." oninput="renderOpMers()">
+  </div>
+  <div class="list" id="op-mers-list"></div>
+</div>
+<div class="pane" id="op-sups">
+  <div class="list" id="op-sups-list"></div>
+</div>
+<div class="pane" id="op-mfrs">
+  <div class="list" id="op-mfrs-list"></div>
+</div>
+<div class="pane" id="op-audit">
+  <div class="list" id="op-audit-list"></div>
+</div>
+</div>
+
+<!-- ====== 公示页 ====== -->
+<div id="sc-pub" class="sc">
+  <div class="pub-header">
+    <div style="font-size:24px;margin-bottom:6px;">🛡️</div>
+    <h2 id="pub-shop-name" style="font-size:18px;margin-bottom:4px;"></h2>
+    <div style="font-size:12px;opacity:.85;">食品安全公示信息 · 食安链认证</div>
+  </div>
+  <div class="pub-section">
+    <div class="section-title"><i class="ti ti-certificate"></i> 营业执照 &amp; 食品经营许可</div>
+    <div id="pub-certs"></div>
+  </div>
+  <div class="pub-section">
+    <div class="section-title"><i class="ti ti-heart-rate-monitor"></i> 员工健康证</div>
+    <div id="pub-health"></div>
+  </div>
+  <div class="pub-section" style="background:#f9f9f9;border:1px dashed var(--g3);">
+    <div class="section-title"><i class="ti ti-video"></i> 后厨实时监控</div>
+    <div style="text-align:center;padding:20px;color:var(--g4);font-size:13px;">
+      <i class="ti ti-video-off" style="font-size:32px;display:block;margin-bottom:8px;"></i>
+      监控接入功能即将上线
+    </div>
+  </div>
+  <div class="pub-section">
+    <div class="section-title"><i class="ti ti-clipboard-list"></i> 近期进货台账</div>
+    <div id="pub-ledger"></div>
+  </div>
+  <div style="text-align:center;padding:20px;font-size:11px;color:var(--g3);">
+    <div>本页数据由食安链平台提供</div>
+    <div>如有疑问请联系当地市场监督管理局</div>
+  </div>
+</div>
+
+<!-- ============ 弹窗区 ============ -->
+
+<!-- 注册 -->
+<div class="modal h" id="reg-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>账号注册</h3><button class="btn-icon" onclick="hideModal('reg-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item">
+      <label class="form-label">注册身份</label>
+      <select class="form-input" id="reg-role">
+        <option value="mer">商户</option>
+        <option value="sup">供应商</option>
+        <option value="mfr">生产厂家</option>
+      </select>
+    </div>
+    <div class="form-item">
+      <label class="form-label">企业/店铺名称 *</label>
+      <input class="form-input" id="reg-name" placeholder="请输入企业全称">
+    </div>
+    <div class="form-item">
+      <label class="form-label">手机号 *</label>
+      <input class="form-input" id="reg-phone" type="tel" placeholder="11位手机号" maxlength="11">
+    </div>
+    <div class="form-item">
+      <label class="form-label">密码 *</label>
+      <input class="form-input" id="reg-pw" type="password" placeholder="6位以上密码">
+    </div>
+    <div class="form-item">
+      <label class="form-label">统一社会信用代码</label>
+      <input class="form-input" id="reg-uscc" placeholder="18位统一社会信用代码">
+    </div>
+    <div class="form-item">
+      <label class="form-label">联系地址</label>
+      <input class="form-input" id="reg-addr" placeholder="详细地址">
+    </div>
+    <div class="msg-err" id="reg-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('reg-modal')">取消</button>
+    <button class="btn btn-p" onclick="doReg()">提交注册</button>
+  </div>
+</div>
+</div>
+
+<!-- 重置密码 -->
+<div class="modal h" id="reset-pw-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>重置密码</h3><button class="btn-icon" onclick="hideModal('reset-pw-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item">
+      <label class="form-label">手机号</label>
+      <input class="form-input" id="rp-phone" type="tel" placeholder="注册手机号" maxlength="11">
+    </div>
+    <div class="form-item">
+      <label class="form-label">新密码</label>
+      <input class="form-input" id="rp-pw" type="password" placeholder="请输入新密码">
+    </div>
+    <div class="msg-err" id="rp-msg"></div>
+    <div class="form-hint">如忘记手机号，请联系市场监管管理员重置</div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('reset-pw-modal')">取消</button>
+    <button class="btn btn-p" onclick="doSelfReset()">确认重置</button>
+  </div>
+</div>
+</div>
+
+<!-- 补充入账 -->
+<div class="modal h" id="add-ledger-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>补充入账</h3><button class="btn-icon" onclick="hideModal('add-ledger-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item">
+      <label class="form-label">商品名称 *</label>
+      <input class="form-input" id="al-name" placeholder="如：猪肉、蔬菜包">
+    </div>
+    <div class="form-item">
+      <label class="form-label">品类</label>
+      <select class="form-input" id="al-cat">
+        <option>猪肉及制品</option><option>牛羊肉</option><option>禽肉</option>
+        <option>水产品</option><option>蔬菜</option><option>水果</option>
+        <option>粮油</option><option>调味品</option><option>饮料</option><option>其他</option>
+      </select>
+    </div>
+    <div class="form-item">
+      <label class="form-label">数量/规格 *</label>
+      <input class="form-input" id="al-qty" placeholder="如：50kg、100箱">
+    </div>
+    <div class="form-item">
+      <label class="form-label">供应商</label>
+      <input class="form-input" id="al-sup" placeholder="输入关键字搜索已关联供应商/厂家" oninput="filterAlSup(this.value)" autocomplete="off">
+      <div id="al-sup-dropdown" style="display:none;border:1px solid var(--g2);border-radius:var(--r);background:var(--w);max-height:150px;overflow-y:auto;margin-top:2px;box-shadow:var(--sh);"></div>
+    </div>
+    <div class="form-item">
+      <label class="form-label">进货日期</label>
+      <input class="form-input" id="al-date" type="date">
+    </div>
+    <div class="form-item">
+      <label class="form-label">生产日期</label>
+      <input class="form-input" id="al-produce-date" type="date">
+    </div>
+    <div class="form-item">
+      <label class="form-label">批次号</label>
+      <input class="form-input" id="al-batch" placeholder="生产批次号（选填）">
+    </div>
+    <div class="form-item">
+      <label class="form-label">检测报告/合格证（可选）</label>
+      <div class="upload-btns" style="display:flex;gap:8px;margin-bottom:6px;">
+        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('al-report-input','image/*')"><i class="ti ti-camera"></i> 拍照</button>
+        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('al-report-input','image/*,application/pdf')"><i class="ti ti-photo"></i> 相册/文件</button>
+      </div>
+      <input type="file" id="al-report-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'al-report-name')">
+      <div id="al-report-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
+    </div>
+    <div class="form-item">
+      <label class="form-label">购货小票（可选）</label>
+      <div class="upload-btns" style="display:flex;gap:8px;margin-bottom:6px;">
+        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('al-ticket-input','image/*')"><i class="ti ti-camera"></i> 拍照</button>
+        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('al-ticket-input','image/*,application/pdf')"><i class="ti ti-photo"></i> 相册/文件</button>
+      </div>
+      <input type="file" id="al-ticket-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'al-ticket-name')">
+      <div id="al-ticket-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <input type="checkbox" id="al-secret">
+      <label for="al-secret" style="font-size:13px;cursor:pointer;">保密记录（公示页仅显示品类）</label>
+    </div>
+    <div class="msg-err" id="al-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('add-ledger-modal')">取消</button>
+    <button class="btn btn-p" onclick="addLedger()">确认入账</button>
+  </div>
+</div>
+</div>
+
+<!-- 要货申请 -->
+<div class="modal h" id="add-order-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>发起要货申请</h3><button class="btn-icon" onclick="hideModal('add-order-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item">
+      <label class="form-label">选择供应商 *</label>
+      <select class="form-input" id="ao-sup"></select>
+    </div>
+    <div class="form-item">
+      <label class="form-label">商品名称 *</label>
+      <input class="form-input" id="ao-name" placeholder="商品名称">
+    </div>
+    <div class="form-item">
+      <label class="form-label">数量/规格 *</label>
+      <input class="form-input" id="ao-qty" placeholder="如：50kg">
+    </div>
+    <div class="form-item">
+      <label class="form-label">期望到货日期</label>
+      <input class="form-input" id="ao-date" type="date">
+    </div>
+    <div class="form-item">
+      <label class="form-label">备注</label>
+      <textarea class="form-input" id="ao-remark" rows="2" placeholder="其他要求..."></textarea>
+    </div>
+    <div class="msg-err" id="ao-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('add-order-modal')">取消</button>
+    <button class="btn btn-p" onclick="addOrder()">提交申请</button>
+  </div>
+</div>
+</div>
+
+<!-- 查验报告弹窗 -->
+<div class="modal h" id="view-report-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>查验报告</h3><button class="btn-icon" onclick="hideModal('view-report-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b" id="view-report-content"></div>
+  <div class="modal-f">
+    <button class="btn btn-p" onclick="confirmReceive()">✓ 确认收货（自动入账）</button>
+  </div>
+</div>
+</div>
+
+<!-- 添加供应商 -->
+<div class="modal h" id="add-supplier-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>手动添加供应商</h3><button class="btn-icon" onclick="hideModal('add-supplier-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item"><label class="form-label">供应商名称 *</label><input class="form-input" id="as-name" placeholder="企业全称"></div>
+    <div class="form-item"><label class="form-label">联系人</label><input class="form-input" id="as-contact" placeholder="联系人姓名"></div>
+    <div class="form-item"><label class="form-label">联系电话</label><input class="form-input" id="as-phone" type="tel" placeholder="手机号"></div>
+    <div class="form-item"><label class="form-label">主营品类</label><input class="form-input" id="as-cat" placeholder="如：猪肉、蔬菜"></div>
+    <div class="msg-err" id="as-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('add-supplier-modal')">取消</button>
+    <button class="btn btn-p" onclick="addSupplier()">确认添加</button>
+  </div>
+</div>
+</div>
+
+<!-- 关联平台供应商 -->
+<div class="modal h" id="link-sup-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>关联平台供应商</h3><button class="btn-icon" onclick="hideModal('link-sup-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="search-bar" style="margin-bottom:10px;">
+      <input class="form-input" id="link-sup-search" placeholder="搜索供应商名称..." oninput="renderLinkSupList()">
+    </div>
+    <div class="list" id="link-sup-results"></div>
+  </div>
+  <div class="modal-f"><button class="btn btn-s" onclick="hideModal('link-sup-modal')">关闭</button></div>
+</div>
+</div>
+
+<!-- 关联厂家（商户） -->
+<div class="modal h" id="link-mfr-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>直接关联厂家</h3><button class="btn-icon" onclick="hideModal('link-mfr-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="search-bar" style="margin-bottom:10px;">
+      <input class="form-input" id="link-mfr-search" placeholder="搜索厂家名称..." oninput="renderLinkMfrList()">
+    </div>
+    <div class="list" id="link-mfr-results"></div>
+  </div>
+  <div class="modal-f"><button class="btn btn-s" onclick="hideModal('link-mfr-modal')">关闭</button></div>
+</div>
+</div>
+
+<!-- 添加证件（商户） -->
+<div class="modal h" id="add-qual-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>添加证件</h3><button class="btn-icon" onclick="hideModal('add-qual-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item">
+      <label class="form-label">证件类型</label>
+      <select class="form-input" id="aq-type">
+        <option>营业执照</option><option>食品经营许可证</option><option>员工健康证</option><option>其他证件</option>
+      </select>
+    </div>
+    <div class="form-item"><label class="form-label">证件编号</label><input class="form-input" id="aq-no" placeholder="证件编号"></div>
+    <div class="form-item">
+      <label class="form-label">到期日期</label>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <input class="form-input" id="aq-expire" type="date" style="flex:1;">
+        <label style="display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:13px;cursor:pointer;">
+          <input type="checkbox" id="aq-longterm" onchange="toggleLongterm('aq-expire',this)"> 长期有效
+        </label>
+      </div>
+    </div>
+    <div class="form-item"><label class="form-label">持证人/持证主体</label><input class="form-input" id="aq-holder" placeholder="持证人姓名或企业名称"></div>
+    <div class="form-item">
+      <label class="form-label">证件照片</label>
+      <div style="display:flex;gap:8px;margin-bottom:6px;">
+        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('aq-file-input','image/*')"><i class="ti ti-camera"></i> 拍照</button>
+        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('aq-file-input','image/*,application/pdf')"><i class="ti ti-photo"></i> 相册/文件</button>
+      </div>
+      <input type="file" id="aq-file-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'aq-file-name')">
+      <div id="aq-file-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
+    </div>
+    <div class="msg-err" id="aq-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('add-qual-modal')">取消</button>
+    <button class="btn btn-p" onclick="addQual('mer')">确认添加</button>
+  </div>
+</div>
+</div>
+
+<!-- 供应商：主动发货通知 -->
+<div class="modal h" id="add-ship-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>发起发货通知</h3><button class="btn-icon" onclick="hideModal('add-ship-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item">
+      <label class="form-label">收货商户 *</label>
+      <select class="form-input" id="ship-mer"></select>
+    </div>
+    <div class="form-item"><label class="form-label">商品名称 *</label><input class="form-input" id="ship-name" placeholder="商品名称"></div>
+    <div class="form-item"><label class="form-label">数量/规格 *</label><input class="form-input" id="ship-qty" placeholder="如：50kg"></div>
+    <div class="form-item"><label class="form-label">预计到货日期</label><input class="form-input" id="ship-date" type="date"></div>
+    <div class="form-item">
+      <label class="form-label">质检报告（可选）</label>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <button type="button" class="btn btn-s btn-sm" onclick="toggleShipReportMode('select')" id="ship-rpt-btn-sel" style="border-color:var(--gr);color:var(--gr);">选取已有报告</button>
+        <button type="button" class="btn btn-s btn-sm" onclick="toggleShipReportMode('upload')" id="ship-rpt-btn-upl">上传新报告</button>
+      </div>
+      <div id="ship-rpt-select-area">
+        <select class="form-input" id="ship-report-ref"><option value="">-- 暂不附报告 --</option></select>
+      </div>
+      <div id="ship-rpt-upload-area" style="display:none;">
+        <div style="display:flex;gap:8px;margin-bottom:6px;">
+          <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('ship-report-input','image/*')"><i class="ti ti-camera"></i> 拍照</button>
+          <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('ship-report-input','image/*,application/pdf')"><i class="ti ti-photo"></i> 相册/文件</button>
+        </div>
+        <input type="file" id="ship-report-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'ship-report-name')">
+        <div id="ship-report-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
+      </div>
+    </div>
+    <div class="msg-err" id="ship-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('add-ship-modal')">取消</button>
+    <button class="btn btn-p" onclick="addShipNotice()">发送通知</button>
+  </div>
+</div>
+</div>
+
+<!-- 供应商：新增产品 -->
+<div class="modal h" id="add-product-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>新增产品</h3><button class="btn-icon" onclick="hideModal('add-product-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item"><label class="form-label">产品名称 *</label><input class="form-input" id="prod-name" placeholder="产品名称"></div>
+    <div class="form-item">
+      <label class="form-label">品类</label>
+      <select class="form-input" id="prod-cat">
+        <option>猪肉及制品</option><option>牛羊肉</option><option>禽肉</option>
+        <option>水产品</option><option>蔬菜</option><option>水果</option>
+        <option>粮油</option><option>调味品</option><option>饮料</option><option>其他</option>
+      </select>
+    </div>
+    <div class="form-item"><label class="form-label">规格/单位</label><input class="form-input" id="prod-spec" placeholder="如：500g/袋、1kg/盒"></div>
+    <div class="form-item">
+      <label class="form-label">关联厂家检测报告</label>
+      <select class="form-input" id="prod-report-ref"><option value="">-- 暂不关联 --</option></select>
+    </div>
+    <div class="msg-err" id="prod-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('add-product-modal')">取消</button>
+    <button class="btn btn-p" onclick="addProduct()">确认添加</button>
+  </div>
+</div>
+</div>
+
+<!-- 供应商：关联厂家/供应商 -->
+<div class="modal h" id="link-mfr2-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>关联厂家/供应商</h3><button class="btn-icon" onclick="hideModal('link-mfr2-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div style="display:flex;gap:6px;margin-bottom:10px;">
+      <button class="btn btn-p btn-sm" id="link2-tab-mfr" onclick="switchLink2Tab('mfr')">生产厂家</button>
+      <button class="btn btn-s btn-sm" id="link2-tab-sup" onclick="switchLink2Tab('sup')">其他供应商</button>
+    </div>
+    <div class="search-bar"><input class="form-input" id="link-mfr2-search" placeholder="搜索名称..." oninput="renderLinkMfr2List()"></div>
+    <div class="list" id="link-mfr2-results"></div>
+  </div>
+  <div class="modal-f"><button class="btn btn-s" onclick="hideModal('link-mfr2-modal')">关闭</button></div>
+</div>
+</div>
+
+<!-- 供应商：资质 -->
+<div class="modal h" id="add-sup-qual-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>添加供应商证件</h3><button class="btn-icon" onclick="hideModal('add-sup-qual-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item"><label class="form-label">证件类型</label>
+      <select class="form-input" id="sq-type"><option>营业执照</option><option>食品经营许可证</option><option>食品流通许可证</option><option>其他</option></select>
+    </div>
+    <div class="form-item"><label class="form-label">证件编号</label><input class="form-input" id="sq-no" placeholder="证件编号"></div>
+    <div class="form-item">
+      <label class="form-label">到期日期</label>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <input class="form-input" id="sq-expire" type="date" style="flex:1;">
+        <label style="display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:13px;cursor:pointer;">
+          <input type="checkbox" id="sq-longterm" onchange="toggleLongterm('sq-expire',this)"> 长期有效
+        </label>
+      </div>
+    </div>
+    <div class="msg-err" id="sq-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('add-sup-qual-modal')">取消</button>
+    <button class="btn btn-p" onclick="addQual('sup')">确认添加</button>
+  </div>
+</div>
+</div>
+
+<!-- 厂家：上传报告 -->
+<div class="modal h" id="add-report-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>上传检测报告</h3><button class="btn-icon" onclick="hideModal('add-report-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item"><label class="form-label">产品名称 *</label><input class="form-input" id="rpt-name" placeholder="被检测产品名称"></div>
+    <div class="form-item"><label class="form-label">检测机构</label><input class="form-input" id="rpt-org" placeholder="出具报告的检测机构名称"></div>
+    <div class="form-item"><label class="form-label">报告编号</label><input class="form-input" id="rpt-no" placeholder="报告编号"></div>
+    <div class="form-item"><label class="form-label">检测日期</label><input class="form-input" id="rpt-date" type="date"></div>
+    <div class="form-item"><label class="form-label">有效期至</label><input class="form-input" id="rpt-expire" type="date"></div>
+    <div class="form-item">
+      <label class="form-label">报告文件</label>
+      <div class="upload-area" onclick="fakePick('rpt-file')"><i class="ti ti-file-upload" style="font-size:24px;"></i><div style="margin-top:6px;font-size:13px;">点击上传PDF/图片</div></div>
+      <div id="rpt-file-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
+    </div>
+    <div class="form-item"><label class="form-label">检测结论</label>
+      <select class="form-input" id="rpt-result"><option value="pass">合格</option><option value="fail">不合格</option><option value="pending">待出结果</option></select>
+    </div>
+    <div class="msg-err" id="rpt-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('add-report-modal')">取消</button>
+    <button class="btn btn-p" onclick="addReport()">确认上传</button>
+  </div>
+</div>
+</div>
+
+<!-- 厂家：批量上传 -->
+<div class="modal h" id="batch-report-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>批量上传报告</h3><button class="btn-icon" onclick="hideModal('batch-report-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="alert alert-warn" style="margin-bottom:12px;"><i class="ti ti-info-circle"></i><span>选择多个文件后，系统将逐一创建报告记录，文件名即产品名称</span></div>
+    <div class="upload-area" onclick="fakeBatchPick()" id="batch-upload-area">
+      <i class="ti ti-files" style="font-size:32px;"></i>
+      <div style="margin-top:8px;font-size:13px;">点击选择多个报告文件</div>
+      <div style="font-size:11px;color:var(--g3);margin-top:4px;">支持PDF、JPG、PNG</div>
+    </div>
+    <div id="batch-file-list" style="margin-top:10px;"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('batch-report-modal')">取消</button>
+    <button class="btn btn-p" onclick="doBatchUpload()">确认上传</button>
+  </div>
+</div>
+</div>
+
+<!-- 厂家：发货 -->
+<div class="modal h" id="add-mfr-ship-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>新增发货记录</h3><button class="btn-icon" onclick="hideModal('add-mfr-ship-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item">
+      <label class="form-label">收货方 *</label>
+      <input class="form-input" id="ms-to" placeholder="输入名称搜索已注册供应商/商户，或直接填写" oninput="filterMsTo(this.value)" autocomplete="off">
+      <div id="ms-to-dropdown" style="display:none;border:1px solid var(--g2);border-radius:var(--r);background:var(--w);max-height:150px;overflow-y:auto;margin-top:2px;box-shadow:var(--sh);"></div>
+    </div>
+    <div class="form-item"><label class="form-label">产品名称 *</label><input class="form-input" id="ms-prod" placeholder="产品名称"></div>
+    <div class="form-item"><label class="form-label">批次号</label><input class="form-input" id="ms-batch" placeholder="生产批次号"></div>
+    <div class="form-item"><label class="form-label">数量</label><input class="form-input" id="ms-qty" placeholder="如：100箱"></div>
+    <div class="form-item"><label class="form-label">发货日期</label><input class="form-input" id="ms-date" type="date"></div>
+    <div class="form-item">
+      <label class="form-label">质检报告（可选）</label>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <button type="button" class="btn btn-s btn-sm" onclick="toggleMsReportMode('select')" id="ms-rpt-btn-sel" style="border-color:var(--gr);color:var(--gr);">关联已有报告</button>
+        <button type="button" class="btn btn-s btn-sm" onclick="toggleMsReportMode('upload')" id="ms-rpt-btn-upl">上传新报告</button>
+      </div>
+      <div id="ms-rpt-select-area">
+        <select class="form-input" id="ms-report-ref"><option value="">-- 暂不关联 --</option></select>
+      </div>
+      <div id="ms-rpt-upload-area" style="display:none;">
+        <div style="display:flex;gap:8px;margin-bottom:6px;">
+          <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('ms-report-input','image/*')"><i class="ti ti-camera"></i> 拍照</button>
+          <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('ms-report-input','image/*,application/pdf')"><i class="ti ti-photo"></i> 相册/文件</button>
+        </div>
+        <input type="file" id="ms-report-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'ms-report-name')">
+        <div id="ms-report-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
+      </div>
+    </div>
+    <div class="msg-err" id="ms-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('add-mfr-ship-modal')">取消</button>
+    <button class="btn btn-p" onclick="addMfrShip()">确认</button>
+  </div>
+</div>
+</div>
+
+<!-- 厂家：资质 -->
+<div class="modal h" id="add-mfr-qual-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>添加厂家证件</h3><button class="btn-icon" onclick="hideModal('add-mfr-qual-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item"><label class="form-label">证件类型</label>
+      <select class="form-input" id="mq-type"><option>营业执照</option><option>食品生产许可证（SC）</option><option>出口卫生注册证</option><option>其他</option></select>
+    </div>
+    <div class="form-item"><label class="form-label">证件编号</label><input class="form-input" id="mq-no" placeholder="证件编号"></div>
+    <div class="form-item">
+      <label class="form-label">到期日期</label>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <input class="form-input" id="mq-expire" type="date" style="flex:1;">
+        <label style="display:flex;align-items:center;gap:5px;white-space:nowrap;font-size:13px;cursor:pointer;">
+          <input type="checkbox" id="mq-longterm" onchange="toggleLongterm('mq-expire',this)"> 长期有效
+        </label>
+      </div>
+    </div>
+    <div class="form-item">
+      <label class="form-label">证件照片</label>
+      <div style="display:flex;gap:8px;margin-bottom:6px;">
+        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('mq-file-input','image/*')"><i class="ti ti-camera"></i> 拍照</button>
+        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('mq-file-input','image/*,application/pdf')"><i class="ti ti-photo"></i> 相册/文件</button>
+      </div>
+      <input type="file" id="mq-file-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'mq-file-name')">
+      <div id="mq-file-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
+    </div>
+    <div class="msg-err" id="mq-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('add-mfr-qual-modal')">取消</button>
+    <button class="btn btn-p" onclick="addQual('mfr')">确认添加</button>
+  </div>
+</div>
+</div>
+
+<!-- 监管：重置密码 -->
+<div class="modal h" id="op-reset-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>重置用户密码</h3><button class="btn-icon" onclick="hideModal('op-reset-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div id="op-reset-info" style="margin-bottom:12px;font-size:14px;"></div>
+    <div class="form-item"><label class="form-label">新密码</label><input class="form-input" id="op-new-pw" type="password" placeholder="新密码"></div>
+    <div class="msg-err" id="op-reset-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('op-reset-modal')">取消</button>
+    <button class="btn btn-p" onclick="doOpReset()">确认重置</button>
+  </div>
+</div>
+</div>
+
+<!-- Toast -->
+<div id="toast" style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:#333;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:.3s;z-index:9999;pointer-events:none;white-space:nowrap;"></div>
+
+<script>
+// ==================== 数据层 ====================
+const DB_KEY = 'fss12';
+
+const DB_VER = 5; // 升版本号强制重建数据
+
+function loadDB() {
+  try {
+    const raw = localStorage.getItem(DB_KEY);
+    if(!raw) return initDB();
+    const db = JSON.parse(raw);
+    // 版本不匹配，强制重建
+    if(!db.__ver || db.__ver < DB_VER) return initDB();
+    // 字段兜底
+    const arr = ['users','ledger','orders','shipments','merSuppliers','quals','reports',
+                 'mfrShipments','pendingReg','invites','supProducts','supMfrs','supPeers','mfrMers','batchFiles'];
+    arr.forEach(k => { if(!Array.isArray(db[k])) db[k] = []; });
+    return db;
+  } catch(e) { return initDB(); }
+}
+
+function saveDB(db) {
+  localStorage.setItem(DB_KEY, JSON.stringify(db));
+}
+
+function initDB() {
+  const db = {
+    users: [
+      { id:'u_op', role:'op', name:'市场监管局', phone:'admin', pw:'admin', uscc:'', addr:'' },
+      { id:'u_mer1', role:'mer', name:'老王餐厅', phone:'admin', pw:'admin', uscc:'91110000MA0000001X', addr:'北京市朝阳区XXX路1号', status:'pass', qrToken:'mer1_pub' },
+      { id:'u_sup1', role:'sup', name:'新鲜蔬菜配送', phone:'admin', pw:'admin', uscc:'91110000MA0000002X', addr:'北京市顺义区XX路', status:'pass' },
+      { id:'u_mfr1', role:'mfr', name:'绿洲食品有限公司', phone:'admin', pw:'admin', uscc:'91110000MA0000003X', addr:'北京市通州区XX工业园', status:'pass' },
+    ],
+    // 进货台账
+    ledger: [
+      { id:'l1', merId:'u_mer1', name:'猪里脊肉', cat:'猪肉及制品', qty:'30kg', supplier:'新鲜蔬菜配送', date:'2025-05-10', secret:false, report:'', ts:Date.now()-86400000*3 },
+      { id:'l2', merId:'u_mer1', name:'特级供应商配方', cat:'调味品', qty:'10箱', supplier:'绿洲食品有限公司', date:'2025-05-11', secret:true, report:'', ts:Date.now()-86400000*2 },
+    ],
+    // 要货申请
+    orders: [
+      { id:'o1', merId:'u_mer1', supId:'u_sup1', supName:'新鲜蔬菜配送', name:'新鲜蔬菜', qty:'50kg', date:'2025-05-20', remark:'', status:'pending', ts:Date.now()-86400000 },
+    ],
+    // 发货/待收货
+    shipments: [
+      { id:'s1', supId:'u_sup1', supName:'新鲜蔬菜配送', merId:'u_mer1', name:'精品猪肉', qty:'20kg', date:'2025-05-13', report:'已附检测合格证（编号:JC2025051301）', reportUrl:'', status:'pending', ts:Date.now()-3600000 },
+    ],
+    // 商户供应商库
+    merSuppliers: [
+      { id:'ms1', merId:'u_mer1', supId:'u_sup1', supName:'新鲜蔬菜配送', contact:'张经理', phone:'13800000002', cat:'蔬菜、猪肉', type:'platform' },
+    ],
+    // 证件资质
+    quals: [
+      { id:'q1', ownerId:'u_mer1', ownerRole:'mer', type:'营业执照', no:'京0000000001', expire:'2026-12-31', holder:'老王餐厅', fileUrl:'' },
+      { id:'q2', ownerId:'u_mer1', ownerRole:'mer', type:'食品经营许可证', no:'JY00001', expire:'2025-06-15', holder:'老王餐厅', fileUrl:'' },
+      { id:'q3', ownerId:'u_mer1', ownerRole:'mer', type:'员工健康证', no:'HJ001', expire:'2026-03-01', holder:'王师傅', fileUrl:'' },
+    ],
+    // 检测报告
+    reports: [
+      { id:'r1', mfrId:'u_mfr1', name:'绿叶蔬菜检测报告', org:'国家食品质量监督检验中心', no:'R2025001', date:'2025-04-01', expire:'2025-10-01', result:'pass', fileUrl:'', ts:Date.now()-86400000*5 },
+    ],
+    // 厂家发货
+    mfrShipments: [],
+    // 注册审核队列
+    pendingReg: [],
+    // 邀请记录
+    invites: [],
+    // 批量上传暂存
+    batchFiles: [],
+    __ver: DB_VER,
+  };
+  saveDB(db);
+  return db;
+}
+
+// ==================== 状态 ====================
+let db = loadDB();
+let currentUser = null;
+let currentRole = 'mer';
+let pendingReceiveId = null;
+let pendingResetUid = null;
+let batchFiles = [];
+
+// ==================== 工具函数 ====================
+function uid() { return 'id_' + Math.random().toString(36).slice(2,10) + '_' + Date.now(); }
+function today() { return new Date().toISOString().slice(0,10); }
+function daysLeft(dateStr) {
+  const d = new Date(dateStr) - new Date();
+  return Math.ceil(d / 86400000);
+}
+function fmt(ts) {
+  if(!ts) return '';
+  const d = new Date(ts);
+  return `${d.getMonth()+1}/${d.getDate()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+}
+function showToast(msg, dur=2000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)'; }, dur);
+}
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  if(el) { el.textContent = msg; el.style.display = 'block'; }
+}
+function clearErr(id) {
+  const el = document.getElementById(id);
+  if(el) { el.style.display = 'none'; }
+}
+function showModal(id) { document.getElementById(id).classList.remove('h'); }
+function hideModal(id) { document.getElementById(id).classList.add('h'); }
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  const icon = btn.querySelector('i');
+  if(inp.type === 'password') { inp.type = 'text'; icon.className = 'ti ti-eye-off'; }
+  else { inp.type = 'password'; icon.className = 'ti ti-eye'; }
+}
+function go(t) {
+  document.querySelectorAll('.sc').forEach(s => s.classList.remove('on'));
+  document.getElementById('sc-'+t).classList.add('on');
+  window.scrollTo(0,0);
+}
+// ===== 文件上传通用函数 =====
+function triggerFileInput(inputId, accept) {
+  const el = document.getElementById(inputId);
+  if(!el) return;
+  el.accept = accept;
+  el.click();
+}
+
+function handleFileSelect(input, nameId) {
+  const el = document.getElementById(nameId);
+  if(!el) return;
+  if(input.files && input.files.length > 0) {
+    const f = input.files[0];
+    el.textContent = '✓ ' + f.name;
+    el.dataset.file = f.name;
+    // 如果是图片，生成预览
+    if(f.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        let preview = el.nextElementSibling;
+        if(!preview || !preview.classList.contains('file-preview')) {
+          preview = document.createElement('img');
+          preview.className = 'file-preview';
+          preview.style.cssText = 'width:80px;height:60px;object-fit:cover;border-radius:6px;margin-top:6px;border:1px solid var(--g2);';
+          el.after(preview);
+        }
+        preview.src = e.target.result;
+        el.dataset.dataUrl = e.target.result;
+      };
+      reader.readAsDataURL(f);
+    }
+  }
+}
+
+function toggleLongterm(expireId, checkbox) {
+  const inp = document.getElementById(expireId);
+  if(!inp) return;
+  if(checkbox.checked) {
+    inp.value = '';
+    inp.disabled = true;
+    inp.placeholder = '长期有效';
+    inp.style.background = 'var(--g1)';
+  } else {
+    inp.disabled = false;
+    inp.placeholder = '';
+    inp.style.background = '';
+  }
+}
+
+function fakePick(id) {
+  // 模拟文件选择
+  const names = ['检测报告2025.pdf','合格证明.pdf','证件扫描.jpg','报告文件.png'];
+  const name = names[Math.floor(Math.random()*names.length)];
+  const el = document.getElementById(id+'-name');
+  if(el) { el.textContent = '✓ ' + name; el.dataset.file = name; }
+}
+function fakeBatchPick() {
+  batchFiles = ['猪肉检测报告.pdf','蔬菜检测报告.pdf','调味品合格证.pdf','水产品质检单.pdf'];
+  const list = document.getElementById('batch-file-list');
+  list.innerHTML = batchFiles.map(f => `<div style="padding:6px 0;border-bottom:1px solid var(--g2);font-size:13px;display:flex;align-items:center;gap:6px;"><i class="ti ti-file-text" style="color:var(--gr);"></i>${f}</div>`).join('');
+}
+
+// ==================== 登录 ====================
+function setRole(role, el) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('on'));
+  if(el) el.classList.add('on');
+  currentRole = role;
+  const desc = { mer:'商户端 - 进货台账、资质公示管理', sup:'供应商 - 处理要货、发货管理', mfr:'生产厂家 - 报告上传、资质维护', op:'市场监管 - 商户审核、数据总览' };
+  document.getElementById('role-desc').textContent = desc[role] || '';
+  clearErr('l-msg');
+  // 回填记住的账号
+  const saved = JSON.parse(localStorage.getItem('fss12_remember') || '{}');
+  if(saved[role]) {
+    document.getElementById('l-inp').value = saved[role].acc || '';
+    document.getElementById('l-pw').value = saved[role].pw || '';
+    document.getElementById('l-remember').checked = true;
+  } else {
+    document.getElementById('l-inp').value = '';
+    document.getElementById('l-pw').value = '';
+  }
+}
+
+function doLogin() {
+  const acc = document.getElementById('l-inp').value.trim();
+  const pwd = document.getElementById('l-pw').value.trim();
+  if(!acc) return showErr('l-msg','请输入手机号或企业名称');
+  if(!pwd) return showErr('l-msg','请输入密码');
+  clearErr('l-msg');
+  // 同时匹配手机号和企业名称
+  let user = null;
+  db.users.forEach(u => {
+    if(u.role !== currentRole) return;
+    if((u.phone === acc || u.name === acc) && u.pw === pwd) user = u;
+  });
+  if(!user) return showErr('l-msg','账号或密码错误，请检查后重试');
+  if(user.role !== 'op' && user.status === 'pending') return showErr('l-msg','账号正在审核中，请耐心等待');
+  if(user.role !== 'op' && user.status === 'reject') return showErr('l-msg','账号审核未通过，请联系市场监管');
+  const remember = document.getElementById('l-remember').checked;
+  const saved = JSON.parse(localStorage.getItem('fss12_remember') || '{}');
+  if(remember) { saved[currentRole] = { acc, pw: pwd }; }
+  else { delete saved[currentRole]; }
+  localStorage.setItem('fss12_remember', JSON.stringify(saved));
+  currentUser = user;
+  enterApp(user);
+}
+
+function enterApp(user) {
+  if(user.role === 'mer') {
+    document.getElementById('mer-shop-name').textContent = user.name;
+    go('mer');
+    mT('overview', null);
+    renderMerOverview();
+    updateReceiveBadge();
+  } else if(user.role === 'sup') {
+    document.getElementById('sup-name-hd').textContent = user.name;
+    go('sup');
+    supT('order', null);
+    renderSupOrders();
+  } else if(user.role === 'mfr') {
+    document.getElementById('mfr-name-hd').textContent = user.name;
+    go('mfr');
+    mfrT('reports', null);
+    renderMfrReports();
+  } else if(user.role === 'op') {
+    go('op');
+    opT('overview', null);
+    renderOpOverview();
+    updateAuditBadge();
+  }
+}
+
+function logout() {
+  currentUser = null;
+  go('login');
+}
+
+// ==================== 注册 ====================
+function doReg() {
+  const role = document.getElementById('reg-role').value;
+  const name = document.getElementById('reg-name').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const pw = document.getElementById('reg-pw').value.trim();
+  const uscc = document.getElementById('reg-uscc').value.trim();
+  const addr = document.getElementById('reg-addr').value.trim();
+  if(!name) return showErr('reg-msg','请输入企业/店铺名称');
+  if(!/^1[3-9]\d{9}$/.test(phone)) return showErr('reg-msg','请输入有效的11位手机号');
+  if(pw.length < 6) return showErr('reg-msg','密码至少6位');
+  if(db.users.find(u => u.phone === phone)) return showErr('reg-msg','该手机号已注册');
+  clearErr('reg-msg');
+  const newUser = { id:uid(), role, name, phone, pw, uscc, addr, status:'pending' };
+  if(role === 'op') newUser.status = 'pass';
+  db.users.push(newUser);
+  db.pendingReg.push({ id:uid(), userId:newUser.id, role, name, ts:Date.now() });
+  saveDB(db);
+  hideModal('reg-modal');
+  showToast('注册成功，等待市场监管审核');
+}
+
+function doSelfReset() {
+  const phone = document.getElementById('rp-phone').value.trim();
+  const pw = document.getElementById('rp-pw').value.trim();
+  if(!phone) return showErr('rp-msg','请输入手机号');
+  if(pw.length < 6) return showErr('rp-msg','密码至少6位');
+  const u = db.users.find(x => x.phone === phone);
+  if(!u) return showErr('rp-msg','手机号未注册');
+  u.pw = pw;
+  saveDB(db);
+  hideModal('reset-pw-modal');
+  showToast('密码已重置，请重新登录');
+}
+
+// ==================== 标签切换 ====================
+function switchTabs(sectionSel, tabPrefix, panePrefix, key, el) {
+  const section = document.querySelector(sectionSel);
+  if(!section) return;
+  section.querySelectorAll('.itab').forEach(t => t.classList.remove('on'));
+  if(el) {
+    el.classList.add('on');
+  } else {
+    const found = section.querySelector(`[onclick*="${panePrefix}T('${key}'"]`) ||
+                  document.getElementById(`${tabPrefix}-${key}`);
+    if(found) found.classList.add('on');
+  }
+  section.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+  const pane = document.getElementById(panePrefix + '-' + key);
+  if(pane) pane.classList.add('on');
+}
+function mT(t, el) {
+  if(!el) el = document.querySelector('#sc-mer .itab[onclick*="\''+t+'\'"]');
+  switchTabs('#sc-mer', 'mt', 'm', t, el);
+  if(t==='ledger') renderLedger();
+  if(t==='order') { renderOrders(); populateSupSelect(); }
+  if(t==='receive') renderReceive();
+  if(t==='suppliers') renderMerSuppliers();
+  if(t==='qual') renderQuals('mer');
+  if(t==='qrcode') renderQR();
+  if(t==='overview') renderMerOverview();
+}
+function supT(t, el) {
+  if(!el) el = document.querySelector('#sc-sup .itab[onclick*="\''+t+'\'"]');
+  switchTabs('#sc-sup', 'supt', 'sup', t, el);
+  if(t==='order') renderSupOrders();
+  if(t==='ship') renderSupShipments();
+  if(t==='products') renderSupProducts();
+  if(t==='mfrs') renderSupMfrs();
+  if(t==='mers') renderSupMers();
+  if(t==='qual') renderQuals('sup');
+}
+function mfrT(t, el) {
+  if(!el) el = document.querySelector('#sc-mfr .itab[onclick*="\''+t+'\'"]');
+  switchTabs('#sc-mfr', 'ft', 'mfr', t, el);
+  if(t==='reports') renderMfrReports();
+  if(t==='ship') renderMfrShip();
+  if(t==='sups') renderMfrSups();
+  if(t==='qual') renderQuals('mfr');
+}
+function opT(t, el) {
+  if(!el) el = document.querySelector('#sc-op .itab[onclick*="\''+t+'\'"]');
+  switchTabs('#sc-op', 'ot', 'op', t, el);
+  if(t==='overview') renderOpOverview();
+  if(t==='mers') renderOpMers();
+  if(t==='sups') renderOpSups();
+  if(t==='mfrs') renderOpMfrs();
+  if(t==='audit') renderOpAudit();
+}
+
+// ==================== 商户端 ====================
+function renderMerOverview() {
+  if(!currentUser) return;
+  const uid = currentUser.id;
+  const myLedger = db.ledger.filter(l => l.merId === uid);
+  const myPending = db.shipments.filter(s => s.merId === uid && s.status === 'pending');
+  const myOrders = db.orders.filter(o => o.merId === uid);
+  const mySuppliers = db.merSuppliers.filter(s => s.merId === uid);
+  document.getElementById('mer-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${myLedger.length}</div><div class="stat-label">台账记录</div></div>
+    <div class="stat-card"><div class="stat-num" style="${myPending.length?'color:var(--rd)':''}">${myPending.length}</div><div class="stat-label">待收货</div></div>
+    <div class="stat-card"><div class="stat-num">${myOrders.length}</div><div class="stat-label">要货申请</div></div>
+    <div class="stat-card"><div class="stat-num">${mySuppliers.length}</div><div class="stat-label">供应商</div></div>`;
+  // 资质预警：仅提醒食品相关证件，到期前30天开始提醒
+  const warnTypes = ['食品经营许可证','营业执照','员工健康证'];
+  const myQuals = db.quals.filter(q => q.ownerId === uid && warnTypes.includes(q.type));
+  const warns = myQuals.map(q => {
+    const d = q.expire === 'longterm' ? 999 : daysLeft(q.expire);
+    return { type: q.type, expire: q.expire, days: d, no: q.no, holder: q.holder };
+  }).filter(q => q.days <= 30);
+  const warnEl = document.getElementById('mer-qual-warn');
+  if(warns.length) {
+    warnEl.innerHTML = `<div class="section-title" style="margin-bottom:8px;"><i class="ti ti-alert-triangle" style="color:var(--or);"></i> 证件到期预警</div>` +
+      warns.map(w => `<div class="expire-warn">
+        <b>${w.type}</b>${w.holder?' ('+w.holder+')':''}
+        <span style="float:right;color:${w.days<0?'var(--rd)':'var(--or)'};">${w.days<0?'已过期':'剩'+w.days+'天'}</span>
+        <div style="font-size:12px;color:var(--g5);margin-top:2px;">编号：${w.no||'—'} · 到期：${w.expire}</div>
+      </div>`).join('');
+  } else {
+    warnEl.innerHTML = `<div class="alert alert-ok"><i class="ti ti-shield-check"></i> 食品证件均在有效期内</div>`;
+  }
+}
+
+function renderLedger() {
+  if(!currentUser) return;
+  const kw = (document.getElementById('ledger-search').value||'').toLowerCase();
+  let items = db.ledger.filter(l => l.merId === currentUser.id);
+  if(kw) items = items.filter(l => l.name.toLowerCase().includes(kw) || (l.supplier||'').toLowerCase().includes(kw));
+  items.sort((a,b) => b.ts - a.ts);
+  const el = document.getElementById('ledger-list');
+  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-clipboard-x"></i>暂无台账记录</div>'; return; }
+  el.innerHTML = items.map(l => `
+    <div class="item">
+      <div class="item-row">
+        <div>
+          <div class="item-title">${l.secret ? '<span class="tag tag-secret">保密</span> ' + l.cat : l.name}</div>
+          <div class="item-sub">${l.secret ? '' : l.cat + ' · '} ${l.qty} · 进货:${l.date}${l.produceDate?' · 生产:'+l.produceDate:''} · ${l.supplier||'—'}${l.batch?' · 批次:'+l.batch:''}</div>
+          ${(l.report||l.ticket) ? `<div class="item-sub" style="color:var(--gr);">${l.report?'<i class="ti ti-file-check"></i> 有报告':''} ${l.ticket?'<i class="ti ti-receipt"></i> 有小票':''}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:6px;align-items:flex-start;">
+          ${l.report ? '<span class="tag tag-pass"><i class="ti ti-file-check"></i> 有报告</span>' : '<span class="tag tag-grey">无报告</span>'}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-s btn-sm" onclick="delLedger('${l.id}')"><i class="ti ti-trash"></i> 删除</button>
+      </div>
+    </div>`).join('');
+}
+
+function filterAlSup(kw) {
+  const dd = document.getElementById('al-sup-dropdown');
+  if(!kw || !currentUser) { dd.style.display='none'; return; }
+  const sups = db.merSuppliers.filter(s => s.merId === currentUser.id && s.supName.toLowerCase().includes(kw.toLowerCase()));
+  if(!sups.length) { dd.style.display='none'; return; }
+  dd.style.display = 'block';
+  dd.innerHTML = sups.map(s => `<div onclick="selectAlSup('${s.supName.replace(/'/g,"\\'")}','${s.id}')" style="padding:10px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--g2);">${s.supName}<span style="font-size:11px;color:var(--g4);margin-left:6px;">${s.cat||''}</span></div>`).join('');
+}
+
+function selectAlSup(name, id) {
+  document.getElementById('al-sup').value = name;
+  document.getElementById('al-sup-dropdown').style.display = 'none';
+}
+
+function addLedger() {
+  const name = document.getElementById('al-name').value.trim();
+  const qty = document.getElementById('al-qty').value.trim();
+  if(!name) return showErr('al-msg','请输入商品名称');
+  if(!qty) return showErr('al-msg','请输入数量/规格');
+  clearErr('al-msg');
+  const item = {
+    id: uid(), merId: currentUser.id,
+    name, cat: document.getElementById('al-cat').value,
+    qty, supplier: document.getElementById('al-sup').value.trim(),
+    date: document.getElementById('al-date').value || today(),
+    produceDate: document.getElementById('al-produce-date').value || '',
+    batch: document.getElementById('al-batch').value.trim(),
+    secret: document.getElementById('al-secret').checked,
+    report: document.getElementById('al-report-name')?.dataset?.file || '',
+    reportUrl: document.getElementById('al-report-name')?.dataset?.dataUrl || '',
+    ticket: document.getElementById('al-ticket-name')?.dataset?.file || '',
+    ticketUrl: document.getElementById('al-ticket-name')?.dataset?.dataUrl || '',
+    ts: Date.now()
+  };
+  db.ledger.push(item);
+  saveDB(db);
+  hideModal('add-ledger-modal');
+  renderLedger();
+  renderMerOverview();
+  // 清空
+  ['al-name','al-qty','al-sup','al-batch'].forEach(id => { const e=document.getElementById(id); if(e) e.value=''; });
+  ['al-date','al-produce-date'].forEach(id => { const e=document.getElementById(id); if(e) e.value=''; });
+  document.getElementById('al-secret').checked = false;
+  ['al-report-name','al-ticket-name'].forEach(id => { const e=document.getElementById(id); if(e) { e.textContent=''; e.dataset.file=''; e.dataset.dataUrl=''; } });
+  ['al-report-input','al-ticket-input'].forEach(id => { const e=document.getElementById(id); if(e) e.value=''; });
+  showToast('入账成功');
+}
+
+function delLedger(id) {
+  db.ledger = db.ledger.filter(l => l.id !== id);
+  saveDB(db);
+  renderLedger();
+  renderMerOverview();
+  showToast('已删除');
+}
+
+function renderOrders() {
+  if(!currentUser) return;
+  const items = db.orders.filter(o => o.merId === currentUser.id).sort((a,b) => b.ts - a.ts);
+  const el = document.getElementById('order-list');
+  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-file-invoice"></i>暂无要货申请</div>'; return; }
+  const statusMap = { pending:'待确认', accepted:'已接单', shipped:'已发货', done:'已完成', reject:'已拒绝' };
+  const statusTag = { pending:'tag-pending', accepted:'tag-blue', shipped:'tag-pass', done:'tag-grey', reject:'tag-reject' };
+  el.innerHTML = items.map(o => `
+    <div class="item">
+      <div class="item-row">
+        <div>
+          <div class="item-title">${o.name}</div>
+          <div class="item-sub">${o.supName} · ${o.qty} · 期望 ${o.date||'—'}</div>
+          ${o.remark ? `<div class="item-sub">备注：${o.remark}</div>` : ''}
+        </div>
+        <span class="tag ${statusTag[o.status]||'tag-grey'}">${statusMap[o.status]||o.status}</span>
+      </div>
+      <div class="item-sub" style="margin-top:6px;">${fmt(o.ts)}</div>
+    </div>`).join('');
+}
+
+function populateSupSelect() {
+  const sel = document.getElementById('ao-sup');
+  if(!sel || !currentUser) return;
+  const sups = db.merSuppliers.filter(s => s.merId === currentUser.id);
+  sel.innerHTML = sups.length
+    ? sups.map(s => `<option value="${s.supId||s.id}" data-name="${s.supName}">${s.supName}</option>`).join('')
+    : '<option value="">-- 暂无关联供应商，请先添加 --</option>';
+}
+
+function addOrder() {
+  const name = document.getElementById('ao-name').value.trim();
+  const qty = document.getElementById('ao-qty').value.trim();
+  const sel = document.getElementById('ao-sup');
+  if(!sel.value) return showErr('ao-msg','请先在供应商库中添加供应商');
+  if(!name) return showErr('ao-msg','请输入商品名称');
+  if(!qty) return showErr('ao-msg','请输入数量');
+  clearErr('ao-msg');
+  const supName = sel.options[sel.selectedIndex]?.dataset?.name || sel.options[sel.selectedIndex]?.text || '';
+  db.orders.push({ id:uid(), merId:currentUser.id, supId:sel.value, supName, name, qty,
+    date: document.getElementById('ao-date').value, remark: document.getElementById('ao-remark').value.trim(),
+    status:'pending', ts:Date.now() });
+  saveDB(db);
+  hideModal('add-order-modal');
+  renderOrders();
+  showToast('要货申请已发送');
+}
+
+function renderReceive() {
+  if(!currentUser) return;
+  const items = db.shipments.filter(s => s.merId === currentUser.id && s.status === 'pending').sort((a,b) => b.ts - a.ts);
+  const el = document.getElementById('receive-list');
+  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-package-off"></i>暂无待收货记录</div>'; return; }
+  el.innerHTML = items.map(s => `
+    <div class="item">
+      <div class="item-row">
+        <div>
+          <div class="item-title">${s.name}</div>
+          <div class="item-sub">${s.supName} · ${s.qty} · 预计 ${s.date||'—'}</div>
+        </div>
+        <span class="tag tag-pending">待收货</span>
+      </div>
+      <div class="item-sub" style="margin-top:4px;">发货时间：${fmt(s.ts)}</div>
+      <div class="item-actions">
+        ${s.report ? `<button class="btn btn-s btn-sm" onclick="viewReport('${s.id}')"><i class="ti ti-file-text"></i> 查验报告</button>` : ''}
+        <button class="btn btn-p btn-sm" onclick="quickConfirm('${s.id}')"><i class="ti ti-check"></i> 确认收货</button>
+      </div>
+    </div>`).join('');
+}
+
+function updateReceiveBadge() {
+  if(!currentUser) return;
+  const cnt = db.shipments.filter(s => s.merId === currentUser.id && s.status === 'pending').length;
+  const tab = document.querySelector('#sc-mer .itabs .itab:nth-child(4)');
+  if(!tab) return;
+  const old = tab.querySelector('.badge');
+  if(old) old.remove();
+  if(cnt > 0) tab.insertAdjacentHTML('beforeend', `<span class="badge">${cnt}</span>`);
+}
+
+function viewReport(sid) {
+  pendingReceiveId = sid;
+  const s = db.shipments.find(x => x.id === sid);
+  if(!s) return;
+  // 查找关联报告详情
+  let reportDetail = '';
+  if(s.reportRef) {
+    const r = db.reports.find(x => x.id === s.reportRef);
+    if(r) {
+      const resMap = { pass:'✅ 合格', fail:'❌ 不合格', pending:'⏳ 待出结果' };
+      reportDetail = `<div style="background:var(--gl);border-radius:var(--r);padding:12px;margin-bottom:10px;">
+        <div style="font-weight:500;margin-bottom:6px;">📋 ${r.name}</div>
+        <div style="font-size:12px;color:var(--g5);">检测机构：${r.org||'—'}<br>报告编号：${r.no||'—'}<br>检测日期：${r.date||'—'}<br>有效期至：${r.expire||'—'}<br>结论：${resMap[r.result]||r.result}</div>
+        ${r.fileUrl&&r.fileUrl.startsWith('data:image')?`<img src="${r.fileUrl}" style="width:100%;max-height:200px;object-fit:contain;margin-top:8px;border-radius:6px;">` : ''}
+      </div>`;
+    }
+  } else if(s.reportUrl && s.reportUrl.startsWith('data:image')) {
+    reportDetail = `<img src="${s.reportUrl}" style="width:100%;max-height:250px;object-fit:contain;border-radius:8px;margin-bottom:10px;">`;
+  }
+  document.getElementById('view-report-content').innerHTML = `
+    <div class="item-title" style="margin-bottom:10px;">${s.name} - 查验报告</div>
+    ${reportDetail || '<div class="alert alert-ok" style="margin-bottom:10px;"><i class="ti ti-shield-check"></i><span>'+(s.report||'供应商已确认货物合格')+'</span></div>'}
+    <div style="font-size:13px;color:var(--g5);">供应商：${s.supName}<br>发货数量：${s.qty}<br>预计到货：${s.date||'—'}</div>`;
+  showModal('view-report-modal');
+}
+
+function confirmReceive() {
+  if(!pendingReceiveId) return;
+  const s = db.shipments.find(x => x.id === pendingReceiveId);
+  if(!s) return;
+  s.status = 'done';
+  // 自动生成台账
+  db.ledger.push({ id:uid(), merId:currentUser.id, name:s.name, cat:'其他', qty:s.qty,
+    supplier:s.supName, date:today(), secret:false, report:s.report||'', ts:Date.now() });
+  saveDB(db);
+  hideModal('view-report-modal');
+  renderReceive();
+  updateReceiveBadge();
+  renderLedger();
+  renderMerOverview();
+  showToast('已确认收货，自动生成台账');
+  pendingReceiveId = null;
+}
+
+function quickConfirm(sid) {
+  pendingReceiveId = sid;
+  confirmReceive();
+}
+
+function renderMerSuppliers() {
+  if(!currentUser) return;
+  const items = db.merSuppliers.filter(s => s.merId === currentUser.id);
+  const el = document.getElementById('mer-suppliers-list');
+  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-building-store"></i>暂无供应商，请先添加</div>'; return; }
+  el.innerHTML = items.map(s => `
+    <div class="item">
+      <div class="item-row">
+        <div>
+          <div class="item-title">${s.supName}</div>
+          <div class="item-sub">${s.cat||''} · ${s.phone||''}</div>
+        </div>
+        <span class="tag ${s.type==='platform'?'tag-pass':'tag-grey'}">${s.type==='platform'?'平台认证':s.type==='mfr'?'直联厂家':'手动'}</span>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-s btn-sm" onclick="delMerSupplier('${s.id}')"><i class="ti ti-trash"></i> 移除</button>
+      </div>
+    </div>`).join('');
+}
+
+function addSupplier() {
+  const name = document.getElementById('as-name').value.trim();
+  if(!name) return showErr('as-msg','请输入供应商名称');
+  clearErr('as-msg');
+  db.merSuppliers.push({ id:uid(), merId:currentUser.id, supId:'', supName:name,
+    contact:document.getElementById('as-contact').value.trim(),
+    phone:document.getElementById('as-phone').value.trim(),
+    cat:document.getElementById('as-cat').value.trim(), type:'manual' });
+  saveDB(db);
+  hideModal('add-supplier-modal');
+  renderMerSuppliers();
+  renderMerOverview();
+  ['as-name','as-contact','as-phone','as-cat'].forEach(id => { const e=document.getElementById(id); if(e) e.value=''; });
+  showToast('供应商已添加');
+}
+
+function delMerSupplier(id) {
+  db.merSuppliers = db.merSuppliers.filter(s => s.id !== id);
+  saveDB(db);
+  renderMerSuppliers();
+  renderMerOverview();
+  showToast('已移除');
+}
+
+function renderLinkSupList() {
+  const kw = (document.getElementById('link-sup-search').value||'').toLowerCase();
+  const linked = db.merSuppliers.filter(s => s.merId === currentUser.id).map(s => s.supId);
+  let sups = db.users.filter(u => u.role === 'sup' && u.status === 'pass');
+  if(kw) sups = sups.filter(u => u.name.toLowerCase().includes(kw));
+  const el = document.getElementById('link-sup-results');
+  if(!sups.length) { el.innerHTML = '<div class="empty" style="padding:20px;">暂无已认证的供应商</div>'; return; }
+  el.innerHTML = sups.map(u => {
+    const isLinked = linked.includes(u.id);
+    return `<div class="item"><div class="item-row">
+      <div><div class="item-title">${u.name}</div><div class="item-sub">${u.addr||''}</div></div>
+      <button class="btn ${isLinked?'btn-s':'btn-p'} btn-sm" onclick="linkSup('${u.id}','${u.name}')" ${isLinked?'disabled':''}>
+        ${isLinked?'已关联':'关联'}
+      </button>
+    </div></div>`;
+  }).join('');
+}
+
+function linkSup(supId, supName) {
+  if(db.merSuppliers.find(s => s.merId === currentUser.id && s.supId === supId)) return;
+  const u = db.users.find(x => x.id === supId);
+  db.merSuppliers.push({ id:uid(), merId:currentUser.id, supId, supName, contact:'', phone:u?.phone||'', cat:'', type:'platform' });
+  saveDB(db);
+  renderLinkSupList();
+  renderMerSuppliers();
+  showToast(`已关联 ${supName}`);
+}
+
+function renderLinkMfrList() {
+  const kw = (document.getElementById('link-mfr-search').value||'').toLowerCase();
+  const linked = db.merSuppliers.filter(s => s.merId === currentUser.id).map(s => s.supId);
+  let mfrs = db.users.filter(u => u.role === 'mfr' && u.status === 'pass');
+  if(kw) mfrs = mfrs.filter(u => u.name.toLowerCase().includes(kw));
+  const el = document.getElementById('link-mfr-results');
+  if(!mfrs.length) { el.innerHTML = '<div class="empty" style="padding:20px;">暂无已认证的厂家</div>'; return; }
+  el.innerHTML = mfrs.map(u => {
+    const isLinked = linked.includes(u.id);
+    return `<div class="item"><div class="item-row">
+      <div><div class="item-title">${u.name}</div><div class="item-sub">${u.addr||''}</div></div>
+      <button class="btn ${isLinked?'btn-s':'btn-p'} btn-sm" onclick="linkMfr('${u.id}','${u.name}')" ${isLinked?'disabled':''}>
+        ${isLinked?'已关联':'关联'}
+      </button>
+    </div></div>`;
+  }).join('');
+}
+
+function linkMfr(mfrId, mfrName) {
+  if(db.merSuppliers.find(s => s.merId === currentUser.id && s.supId === mfrId)) return;
+  const u = db.users.find(x => x.id === mfrId);
+  db.merSuppliers.push({ id:uid(), merId:currentUser.id, supId:mfrId, supName:mfrName, contact:'', phone:u?.phone||'', cat:'', type:'mfr' });
+  saveDB(db);
+  renderLinkMfrList();
+  renderMerSuppliers();
+  showToast(`已关联厂家 ${mfrName}`);
+}
+
+// 证件资质
+function renderQuals(role) {
+  if(!currentUser) return;
+  const items = db.quals.filter(q => q.ownerId === currentUser.id && q.ownerRole === role);
+  const listEl = document.getElementById(role === 'mer' ? 'mer-qual-list' : role === 'sup' ? 'sup-qual-list' : 'mfr-qual-list');
+  if(!listEl) return;
+  if(!items.length) { listEl.innerHTML = '<div class="empty"><i class="ti ti-certificate-off"></i>暂无证件记录</div>'; return; }
+  listEl.innerHTML = items.map(q => {
+    const isLT = q.expire === 'longterm';
+    const d = isLT ? 999 : daysLeft(q.expire);
+    const cls = isLT ? 'tag-pass' : d < 0 ? 'tag-reject' : d <= 30 ? 'tag-pending' : 'tag-pass';
+    const label = isLT ? '长期有效' : d < 0 ? '已过期' : d <= 30 ? `剩${d}天` : '有效';
+    const warnCls = isLT ? 'expire-ok' : d <= 30 ? 'expire-warn' : 'expire-ok';
+    const expireText = isLT ? '长期有效' : q.expire;
+    const hasFile = q.fileUrl && q.fileUrl.startsWith('data:');
+    return `<div class="${warnCls}" style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="flex:1;">
+          <div style="font-weight:500;">${q.type}</div>
+          <div style="font-size:12px;color:var(--g5);margin-top:2px;">编号：${q.no||'—'} · 到期：${expireText}${q.holder?' · '+q.holder:''}</div>
+          ${hasFile ? `<img src="${q.fileUrl}" style="width:80px;height:60px;object-fit:cover;border-radius:6px;margin-top:6px;cursor:pointer;border:1px solid var(--g2);" onclick="viewImage('${q.id}')">` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span class="tag ${cls}">${label}</span>
+          <button class="btn btn-s btn-sm" onclick="delQual('${q.id}')"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addQual(role) {
+  const typeMap = { mer:'aq', sup:'sq', mfr:'mq' };
+  const prefix = typeMap[role];
+  const longtermEl = document.getElementById(prefix+'-longterm');
+  const longterm = longtermEl ? longtermEl.checked : false;
+  const expire = longterm ? 'longterm' : document.getElementById(prefix+'-expire').value;
+  if(!expire) return showErr(prefix+'-msg','请选择到期日期，或勾选"长期有效"');
+  clearErr(prefix+'-msg');
+  const fileNameEl = document.getElementById(prefix+'-file-name');
+  db.quals.push({
+    id:uid(), ownerId:currentUser.id, ownerRole:role,
+    type:document.getElementById(prefix+'-type').value,
+    no: (document.getElementById(prefix+'-no')||{}).value || '',
+    expire,
+    holder: (document.getElementById(prefix+'-holder')||{}).value || '',
+    fileUrl: fileNameEl ? (fileNameEl.dataset.dataUrl || fileNameEl.dataset.file || '') : ''
+  });
+  saveDB(db);
+  const modalMap = { mer:'add-qual-modal', sup:'add-sup-qual-modal', mfr:'add-mfr-qual-modal' };
+  hideModal(modalMap[role]);
+  renderQuals(role);
+  if(role==='mer') renderMerOverview();
+  showToast('证件已添加');
+}
+
+function viewImage(qualId) {
+  const q = db.quals.find(x => x.id === qualId);
+  if(!q || !q.fileUrl) return;
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  overlay.onclick = () => document.body.removeChild(overlay);
+  const img = document.createElement('img');
+  img.src = q.fileUrl;
+  img.style.cssText = 'max-width:95%;max-height:90vh;border-radius:8px;';
+  overlay.appendChild(img);
+  document.body.appendChild(overlay);
+}
+
+function delQual(id) {
+  db.quals = db.quals.filter(q => q.id !== id);
+  saveDB(db);
+  if(currentUser.role === 'mer') { renderQuals('mer'); renderMerOverview(); }
+  else if(currentUser.role === 'sup') renderQuals('sup');
+  else if(currentUser.role === 'mfr') renderQuals('mfr');
+  showToast('已删除');
+}
+
+function renderQR() {
+  if(!currentUser) return;
+  const token = currentUser.qrToken || currentUser.id;
+  const url = window.location.href.split('?')[0] + '?pub=' + token;
+  document.getElementById('qr-nm').textContent = currentUser.name;
+  document.getElementById('qr-url').textContent = url;
+  QRCode.toCanvas(document.getElementById('qr-cv'), url, { width:200, color:{ dark:'#0A7C59', light:'#ffffff' }});
+}
+
+function dlQR() {
+  const c = document.getElementById('qr-cv');
+  const a = document.createElement('a');
+  a.download = '食安公示码.png';
+  a.href = c.toDataURL();
+  a.click();
+}
+
+function pvPub() {
+  if(!currentUser) return;
+  const token = currentUser.qrToken || currentUser.id;
+  renderPubPage(token);
+}
+
+function genInvite() {
+  const type = document.getElementById('invite-type').value;
+  const token = 'inv_' + uid();
+  const url = window.location.href.split('?')[0] + '?invite=' + token + '&role=' + type;
+  db.invites.push({ id:token, merId:currentUser.id, merName:currentUser.name, role:type, ts:Date.now() });
+  saveDB(db);
+  document.getElementById('invite-link').value = url;
+  document.getElementById('invite-result').style.display = 'block';
+}
+
+function copyInvite() {
+  const inp = document.getElementById('invite-link');
+  navigator.clipboard.writeText(inp.value).then(() => showToast('已复制到剪贴板')).catch(() => {
+    inp.select(); document.execCommand('copy'); showToast('已复制');
+  });
+}
+
+// ==================== 供应商端 ====================
+function renderSupOrders() {
+  if(!currentUser) return;
+  // 显示所有发给本供应商的要货申请
+  const items = db.orders.filter(o => {
+    const ms = db.merSuppliers.find(s => s.supId === currentUser.id);
+    return o.supId === currentUser.id || (ms && o.merId === ms.merId);
+  }).concat(db.orders.filter(o => o.supId === currentUser.id)).filter((v,i,a) => a.findIndex(x=>x.id===v.id)===i)
+    .sort((a,b) => b.ts - a.ts);
+  const el = document.getElementById('sup-order-list');
+  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-file-invoice"></i>暂无要货申请</div>'; return; }
+  const statusMap = { pending:'待接单', accepted:'已接单', shipped:'已发货', done:'已完成', reject:'已拒绝' };
+  el.innerHTML = items.map(o => `
+    <div class="item">
+      <div class="item-row">
+        <div>
+          <div class="item-title">${o.name}</div>
+          <div class="item-sub">来自：${getMerName(o.merId)} · ${o.qty} · 期望 ${o.date||'—'}</div>
+        </div>
+        <span class="tag tag-pending">${statusMap[o.status]||o.status}</span>
+      </div>
+      <div class="item-actions">
+        ${o.status==='pending' ? `<button class="btn btn-p btn-sm" onclick="acceptOrder('${o.id}')"><i class="ti ti-check"></i> 接单</button>
+          <button class="btn btn-s btn-sm" onclick="rejectOrder('${o.id}')"><i class="ti ti-x"></i> 拒绝</button>` : ''}
+        ${o.status==='accepted' ? `<button class="btn btn-p btn-sm" onclick="shipOrder('${o.id}')"><i class="ti ti-truck"></i> 标记发货</button>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function getMerName(merId) {
+  const u = db.users.find(x => x.id === merId);
+  return u ? u.name : '未知商户';
+}
+
+function acceptOrder(id) {
+  const o = db.orders.find(x => x.id === id);
+  if(o) { o.status = 'accepted'; saveDB(db); renderSupOrders(); showToast('已接单'); }
+}
+function rejectOrder(id) {
+  const o = db.orders.find(x => x.id === id);
+  if(o) { o.status = 'reject'; saveDB(db); renderSupOrders(); showToast('已拒绝'); }
+}
+function shipOrder(id) {
+  const o = db.orders.find(x => x.id === id);
+  if(!o) return;
+  o.status = 'shipped';
+  // 自动生成发货记录
+  db.shipments.push({ id:uid(), supId:currentUser.id, supName:currentUser.name, merId:o.merId,
+    name:o.name, qty:o.qty, date:today(), report:'', reportUrl:'', status:'pending', ts:Date.now() });
+  saveDB(db);
+  renderSupOrders();
+  showToast('已标记发货，商户收到待收货通知');
+}
+
+function renderSupShipments() {
+  if(!currentUser) return;
+  const items = db.shipments.filter(s => s.supId === currentUser.id).sort((a,b) => b.ts - a.ts);
+  const el = document.getElementById('sup-ship-list');
+  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-truck-off"></i>暂无发货记录</div>'; return; }
+  el.innerHTML = items.map(s => `
+    <div class="item">
+      <div class="item-row">
+        <div>
+          <div class="item-title">${s.name}</div>
+          <div class="item-sub">收货方：${getMerName(s.merId)} · ${s.qty} · ${s.date||'—'}</div>
+          ${s.report ? `<div class="item-sub" style="color:var(--gr);">已附报告：${s.report}</div>` : ''}
+        </div>
+        <span class="tag ${s.status==='pending'?'tag-pending':'tag-pass'}">${s.status==='pending'?'待收货':'已收货'}</span>
+      </div>
+    </div>`).join('');
+}
+
+function addShipNotice() {
+  const name = document.getElementById('ship-name').value.trim();
+  const qty = document.getElementById('ship-qty').value.trim();
+  const sel = document.getElementById('ship-mer');
+  if(!sel.value) return showErr('ship-msg','请选择收货商户');
+  if(!name) return showErr('ship-msg','请输入商品名称');
+  if(!qty) return showErr('ship-msg','请输入数量');
+  clearErr('ship-msg');
+  const merId = sel.value;
+  const merName = sel.options[sel.selectedIndex]?.text || '';
+  let reportRef = '', reportUrl = '', reportText = '';
+  if(shipReportMode === 'select') {
+    reportRef = document.getElementById('ship-report-ref')?.value || '';
+    if(reportRef) {
+      const r = db.reports.find(x=>x.id===reportRef);
+      reportText = r ? '已附检测报告：'+r.name : '';
+    }
+  } else {
+    const rn = document.getElementById('ship-report-name');
+    reportUrl = rn?.dataset?.dataUrl || '';
+    reportText = rn?.dataset?.file ? '已附检测报告：'+rn.dataset.file : '';
+  }
+  db.shipments.push({ id:uid(), supId:currentUser.id, supName:currentUser.name, merId, name, qty,
+    date:document.getElementById('ship-date').value, report:reportText,
+    reportRef, reportUrl, status:'pending', ts:Date.now() });
+  saveDB(db);
+  hideModal('add-ship-modal');
+  renderSupShipments();
+  showToast('发货通知已发送');
+  // 填充ship-mer供应商关联商户列表
+  populateShipMerSelect();
+}
+
+// 供应商发货报告模式切换
+let shipReportMode = 'select';
+function toggleShipReportMode(mode) {
+  shipReportMode = mode;
+  document.getElementById('ship-rpt-select-area').style.display = mode==='select' ? '' : 'none';
+  document.getElementById('ship-rpt-upload-area').style.display = mode==='upload' ? '' : 'none';
+  document.getElementById('ship-rpt-btn-sel').style.cssText = mode==='select' ? 'border-color:var(--gr);color:var(--gr);' : '';
+  document.getElementById('ship-rpt-btn-upl').style.cssText = mode==='upload' ? 'border-color:var(--gr);color:var(--gr);' : '';
+}
+
+function populateShipReportSelect() {
+  if(!currentUser) return;
+  const sel = document.getElementById('ship-report-ref');
+  if(!sel) return;
+  // 自己关联的厂家的报告 + 自己直接拥有的报告（如果供应商也有）
+  const linkedMfrIds = (db.supMfrs||[]).filter(x=>x.supId===currentUser.id).map(x=>x.mfrId);
+  const reports = db.reports.filter(r => linkedMfrIds.includes(r.mfrId) || r.mfrId===currentUser.id);
+  sel.innerHTML = '<option value="">-- 暂不附报告 --</option>' + reports.map(r=>`<option value="${r.id}">${r.name}（${r.date||'—'}）</option>`).join('');
+}
+
+function populateShipMerSelect() {
+  // 找到关联的商户
+  const linkedMers = db.merSuppliers.filter(s => s.supId === currentUser.id).map(s => s.merId);
+  const mers = db.users.filter(u => u.role === 'mer' && (linkedMers.includes(u.id) || u.status === 'pass'));
+  const sel = document.getElementById('ship-mer');
+  if(sel) sel.innerHTML = mers.map(u => `<option value="${u.id}">${u.name}</option>`).join('') || '<option value="">-- 暂无关联商户 --</option>';
+}
+
+function renderSupProducts() {
+  if(!currentUser) return;
+  const items = (db.supProducts || []).filter(p => p.supId === currentUser.id);
+  const el = document.getElementById('sup-products-list');
+  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-package-off"></i>暂无产品，请添加</div>'; return; }
+  el.innerHTML = items.map(p => `
+    <div class="item">
+      <div class="item-row">
+        <div>
+          <div class="item-title">${p.name}</div>
+          <div class="item-sub">${p.cat} · ${p.spec||'—'}</div>
+          ${p.reportRef ? `<div class="item-sub" style="color:var(--gr);"><i class="ti ti-file-check"></i> 已关联厂家报告</div>` : ''}
+        </div>
+        <button class="btn btn-s btn-sm" onclick="delProduct('${p.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function addProduct() {
+  const name = document.getElementById('prod-name').value.trim();
+  if(!name) return showErr('prod-msg','请输入产品名称');
+  clearErr('prod-msg');
+  if(!db.supProducts) db.supProducts = [];
+  db.supProducts.push({ id:uid(), supId:currentUser.id, name, cat:document.getElementById('prod-cat').value,
+    spec:document.getElementById('prod-spec').value.trim(), reportRef:document.getElementById('prod-report-ref').value });
+  saveDB(db);
+  hideModal('add-product-modal');
+  renderSupProducts();
+  showToast('产品已添加');
+}
+
+function delProduct(id) {
+  if(!db.supProducts) return;
+  db.supProducts = db.supProducts.filter(p => p.id !== id);
+  saveDB(db);
+  renderSupProducts();
+  showToast('已删除');
+}
+
+function renderSupMfrs() {
+  if(!currentUser) return;
+  const linkedMfrs = (db.supMfrs || []).filter(x => x.supId === currentUser.id);
+  const linkedPeers = (db.supPeers || []).filter(x => x.supId === currentUser.id);
+  const el = document.getElementById('sup-mfrs-list');
+  if(!linkedMfrs.length && !linkedPeers.length) { el.innerHTML = '<div class="empty"><i class="ti ti-building-off"></i>暂无关联厂家或供应商</div>'; return; }
+  const mfrHtml = linkedMfrs.map(x => {
+    const u = db.users.find(u => u.id === x.mfrId);
+    return `<div class="item"><div class="item-row">
+      <div><div class="item-title">${x.mfrName}</div><div class="item-sub">生产厂家 · ${u?.addr||''}</div></div>
+      <button class="btn btn-s btn-sm" onclick="delSupMfr('${x.id}')"><i class="ti ti-trash"></i></button>
+    </div></div>`;
+  }).join('');
+  const peerHtml = linkedPeers.map(x => {
+    return `<div class="item"><div class="item-row">
+      <div><div class="item-title">${x.peerName}</div><div class="item-sub">上级/同级供应商</div></div>
+      <button class="btn btn-s btn-sm" onclick="delSupPeer('${x.id}')"><i class="ti ti-trash"></i></button>
+    </div></div>`;
+  }).join('');
+  el.innerHTML = mfrHtml + peerHtml;
+}
+
+function delSupPeer(id) {
+  db.supPeers = (db.supPeers||[]).filter(x => x.id !== id);
+  saveDB(db);
+  renderSupMfrs();
+  showToast('已移除');
+}
+
+let link2TabMode = 'mfr';
+function switchLink2Tab(mode) {
+  link2TabMode = mode;
+  document.getElementById('link2-tab-mfr').className = 'btn btn-sm ' + (mode==='mfr'?'btn-p':'btn-s');
+  document.getElementById('link2-tab-sup').className = 'btn btn-sm ' + (mode==='sup'?'btn-p':'btn-s');
+  document.getElementById('link-mfr2-search').value = '';
+  renderLinkMfr2List();
+}
+
+function renderLinkMfr2List() {
+  const kw = (document.getElementById('link-mfr2-search').value||'').toLowerCase();
+  const linkedMfrIds = (db.supMfrs || []).filter(x => x.supId === currentUser.id).map(x => x.mfrId);
+  const linkedSupIds = (db.supPeers || []).filter(x => x.supId === currentUser.id).map(x => x.peerId);
+  const el = document.getElementById('link-mfr2-results');
+  if(link2TabMode === 'mfr') {
+    let list = db.users.filter(u => u.role === 'mfr' && u.status === 'pass');
+    if(kw) list = list.filter(u => u.name.toLowerCase().includes(kw.toLowerCase()));
+    if(!list.length) { el.innerHTML = '<div class="empty" style="padding:20px;">暂无已认证厂家</div>'; return; }
+    el.innerHTML = list.map(u => {
+      const isLinked = linkedMfrIds.includes(u.id);
+      return `<div class="item"><div class="item-row">
+        <div><div class="item-title">${u.name}</div><div class="item-sub">${u.addr||''}</div></div>
+        <button class="btn ${isLinked?'btn-s':'btn-p'} btn-sm" onclick="linkSupMfr('${u.id}','${u.name}')" ${isLinked?'disabled':''}>${isLinked?'已关联':'关联'}</button>
+      </div></div>`;
+    }).join('');
+  } else {
+    let list = db.users.filter(u => u.role === 'sup' && u.status === 'pass' && u.id !== currentUser.id);
+    if(kw) list = list.filter(u => u.name.toLowerCase().includes(kw.toLowerCase()));
+    if(!list.length) { el.innerHTML = '<div class="empty" style="padding:20px;">暂无其他供应商</div>'; return; }
+    el.innerHTML = list.map(u => {
+      const isLinked = linkedSupIds.includes(u.id);
+      return `<div class="item"><div class="item-row">
+        <div><div class="item-title">${u.name}</div><div class="item-sub">${u.addr||''}</div></div>
+        <button class="btn ${isLinked?'btn-s':'btn-p'} btn-sm" onclick="linkSupPeer('${u.id}','${u.name}')" ${isLinked?'disabled':''}>${isLinked?'已关联':'关联'}</button>
+      </div></div>`;
+    }).join('');
+  }
+}
+
+function linkSupPeer(peerId, peerName) {
+  if(!db.supPeers) db.supPeers = [];
+  if(db.supPeers.find(x => x.supId === currentUser.id && x.peerId === peerId)) return;
+  db.supPeers.push({ id:uid(), supId:currentUser.id, peerId, peerName });
+  saveDB(db);
+  renderLinkMfr2List();
+  renderSupMfrs();
+  showToast(`已关联供应商 ${peerName}`);
+}
+
+function linkSupMfr(mfrId, mfrName) {
+  if(!db.supMfrs) db.supMfrs = [];
+  if(db.supMfrs.find(x => x.supId === currentUser.id && x.mfrId === mfrId)) return;
+  db.supMfrs.push({ id:uid(), supId:currentUser.id, mfrId, mfrName });
+  saveDB(db);
+  renderLinkMfr2List();
+  renderSupMfrs();
+  showToast(`已关联 ${mfrName}`);
+}
+
+function delSupMfr(id) {
+  db.supMfrs = (db.supMfrs||[]).filter(x => x.id !== id);
+  saveDB(db);
+  renderSupMfrs();
+  showToast('已移除');
+}
+
+function renderSupMers() {
+  if(!currentUser) return;
+  const linked = db.merSuppliers.filter(s => s.supId === currentUser.id);
+  const el = document.getElementById('sup-mers-list');
+  if(!linked.length) { el.innerHTML = '<div class="empty"><i class="ti ti-building-store"></i>暂无关联商户</div>'; return; }
+  el.innerHTML = linked.map(s => {
+    const mer = db.users.find(u => u.id === s.merId);
+    return `<div class="item"><div class="item-row">
+      <div><div class="item-title">${getMerName(s.merId)}</div><div class="item-sub">${mer?.addr||''}</div></div>
+      <span class="tag tag-pass">已关联</span>
+    </div></div>`;
+  }).join('');
+}
+
+// ==================== 厂家端 ====================
+function renderMfrReports() {
+  if(!currentUser) return;
+  const kw = (document.getElementById('mfr-report-search')?.value||'').toLowerCase();
+  let items = db.reports.filter(r => r.mfrId === currentUser.id);
+  if(kw) items = items.filter(r => r.name.toLowerCase().includes(kw) || (r.date||'').includes(kw));
+  items.sort((a,b) => b.ts - a.ts);
+  const el = document.getElementById('mfr-reports-list');
+  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-file-off"></i>暂无检测报告</div>'; return; }
+  const resMap = { pass:'合格', fail:'不合格', pending:'待出结果' };
+  const resTag = { pass:'tag-pass', fail:'tag-reject', pending:'tag-pending' };
+  el.innerHTML = items.map(r => `
+    <div class="item">
+      <div class="item-row">
+        <div>
+          <div class="item-title">${r.name}</div>
+          <div class="item-sub">${r.org||'—'} · 编号：${r.no||'—'}</div>
+          <div class="item-sub">检测日期：${r.date||'—'} · 有效期至：${r.expire||'—'}</div>
+        </div>
+        <span class="tag ${resTag[r.result]||'tag-grey'}">${resMap[r.result]||r.result}</span>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-s btn-sm" onclick="delReport('${r.id}')"><i class="ti ti-trash"></i> 删除</button>
+      </div>
+    </div>`).join('');
+}
+
+function addReport() {
+  const name = document.getElementById('rpt-name').value.trim();
+  if(!name) return showErr('rpt-msg','请输入产品名称');
+  clearErr('rpt-msg');
+  db.reports.push({
+    id:uid(), mfrId:currentUser.id, name, org:document.getElementById('rpt-org').value.trim(),
+    no:document.getElementById('rpt-no').value.trim(), date:document.getElementById('rpt-date').value,
+    expire:document.getElementById('rpt-expire').value, result:document.getElementById('rpt-result').value,
+    fileUrl: document.getElementById('rpt-file-name')?.dataset?.file || '', ts:Date.now()
+  });
+  saveDB(db);
+  hideModal('add-report-modal');
+  renderMfrReports();
+  ['rpt-name','rpt-org','rpt-no'].forEach(id => { const e=document.getElementById(id); if(e) e.value=''; });
+  showToast('报告已上传');
+}
+
+function delReport(id) {
+  db.reports = db.reports.filter(r => r.id !== id);
+  saveDB(db);
+  renderMfrReports();
+  showToast('已删除');
+}
+
+function doBatchUpload() {
+  if(!batchFiles.length) return showToast('请先选择文件');
+  let added = 0;
+  batchFiles.forEach(f => {
+    const name = f.replace(/\.(pdf|jpg|png)$/i, '');
+    db.reports.push({ id:uid(), mfrId:currentUser.id, name, org:'', no:'', date:today(), expire:'', result:'pass', fileUrl:f, ts:Date.now() });
+    added++;
+  });
+  saveDB(db);
+  batchFiles = [];
+  document.getElementById('batch-file-list').innerHTML = '';
+  hideModal('batch-report-modal');
+  renderMfrReports();
+  showToast(`批量上传成功，共 ${added} 份报告`);
+}
+
+function renderMfrShip() {
+  if(!currentUser) return;
+  const items = db.mfrShipments.filter(s => s.mfrId === currentUser.id).sort((a,b) => b.ts - a.ts);
+  const el = document.getElementById('mfr-ship-list');
+  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-truck-off"></i>暂无发货记录</div>'; return; }
+  el.innerHTML = items.map(s => `
+    <div class="item">
+      <div class="item-row">
+        <div>
+          <div class="item-title">${s.prod}</div>
+          <div class="item-sub">收货方：${s.to} · 批次：${s.batch||'—'} · 数量：${s.qty}</div>
+          <div class="item-sub">发货日期：${s.date||'—'}</div>
+          ${s.reportRef||s.reportUrl ? `<div class="item-sub" style="color:var(--gr);"><i class="ti ti-file-check"></i> 已附质检报告</div>` : ''}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-s btn-sm" onclick="delMfrShip('${s.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+// 厂家发货收货方联想
+function filterMsTo(kw) {
+  const dd = document.getElementById('ms-to-dropdown');
+  if(!kw) { dd.style.display='none'; return; }
+  const all = db.users.filter(u => (u.role==='sup'||u.role==='mer') && u.status==='pass' && u.name.toLowerCase().includes(kw.toLowerCase()));
+  if(!all.length) { dd.style.display='none'; return; }
+  dd.style.display = 'block';
+  dd.innerHTML = all.map(u=>`<div onclick="selectMsTo('${u.name.replace(/'/g,"\\'")}','${u.id}')" style="padding:10px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--g2);">${u.name}<span style="font-size:11px;color:var(--g4);margin-left:6px;">${u.role==='sup'?'供应商':'商户'}</span></div>`).join('');
+}
+
+function selectMsTo(name, id) {
+  document.getElementById('ms-to').value = name;
+  document.getElementById('ms-to').dataset.toId = id;
+  document.getElementById('ms-to-dropdown').style.display = 'none';
+}
+
+// 厂家发货报告模式
+let msReportMode = 'select';
+function toggleMsReportMode(mode) {
+  msReportMode = mode;
+  document.getElementById('ms-rpt-select-area').style.display = mode==='select' ? '' : 'none';
+  document.getElementById('ms-rpt-upload-area').style.display = mode==='upload' ? '' : 'none';
+  document.getElementById('ms-rpt-btn-sel').style.cssText = mode==='select'?'border-color:var(--gr);color:var(--gr);':'';
+  document.getElementById('ms-rpt-btn-upl').style.cssText = mode==='upload'?'border-color:var(--gr);color:var(--gr);':'';
+}
+
+function populateMsReportSelect() {
+  if(!currentUser) return;
+  const sel = document.getElementById('ms-report-ref');
+  if(!sel) return;
+  const myReports = db.reports.filter(r => r.mfrId === currentUser.id);
+  sel.innerHTML = '<option value="">-- 暂不关联 --</option>' + myReports.map(r=>`<option value="${r.id}">${r.name}（${r.date||'—'}）</option>`).join('');
+}
+
+// 厂家关联页 tab
+let mfrLinkTabMode = 'sup';
+function switchMfrLinkTab(mode) {
+  mfrLinkTabMode = mode;
+  document.getElementById('mfr-link-tab-sup').className = 'btn btn-sm ' + (mode==='sup'?'btn-p':'btn-s');
+  document.getElementById('mfr-link-tab-mer').className = 'btn btn-sm ' + (mode==='mer'?'btn-p':'btn-s');
+  document.getElementById('mfr-link-search').value = '';
+  renderMfrLinkList();
+}
+
+function renderMfrLinkList() {
+  if(!currentUser) return;
+  const kw = (document.getElementById('mfr-link-search')?.value||'').toLowerCase();
+  const el = document.getElementById('mfr-sups-list');
+  if(mfrLinkTabMode === 'sup') {
+    const linkedIds = (db.supMfrs||[]).filter(x=>x.mfrId===currentUser.id).map(x=>x.supId);
+    let list = db.users.filter(u=>u.role==='sup'&&u.status==='pass');
+    if(kw) list = list.filter(u=>u.name.toLowerCase().includes(kw));
+    if(!list.length) { el.innerHTML='<div class="empty"><i class="ti ti-truck-off"></i>暂无已认证供应商</div>'; return; }
+    el.innerHTML = list.map(u=>{
+      const isLinked = linkedIds.includes(u.id);
+      return `<div class="item"><div class="item-row">
+        <div><div class="item-title">${u.name}</div><div class="item-sub">供应商 · ${u.addr||''}</div></div>
+        <button class="btn ${isLinked?'btn-s':'btn-p'} btn-sm" onclick="linkMfrToSup('${u.id}','${u.name}')" ${isLinked?'disabled':''}>${isLinked?'已关联':'关联'}</button>
+      </div></div>`;
+    }).join('');
+  } else {
+    const linkedIds = (db.mfrMers||[]).filter(x=>x.mfrId===currentUser.id).map(x=>x.merId);
+    let list = db.users.filter(u=>u.role==='mer'&&u.status==='pass');
+    if(kw) list = list.filter(u=>u.name.toLowerCase().includes(kw));
+    if(!list.length) { el.innerHTML='<div class="empty"><i class="ti ti-building-store"></i>暂无已认证商户</div>'; return; }
+    el.innerHTML = list.map(u=>{
+      const isLinked = linkedIds.includes(u.id);
+      return `<div class="item"><div class="item-row">
+        <div><div class="item-title">${u.name}</div><div class="item-sub">商户 · ${u.addr||''}</div></div>
+        <button class="btn ${isLinked?'btn-s':'btn-p'} btn-sm" onclick="linkMfrToMer('${u.id}','${u.name}')" ${isLinked?'disabled':''}>${isLinked?'已关联':'关联'}</button>
+      </div></div>`;
+    }).join('');
+  }
+}
+
+function linkMfrToSup(supId, supName) {
+  if(!db.supMfrs) db.supMfrs = [];
+  if(db.supMfrs.find(x=>x.mfrId===currentUser.id&&x.supId===supId)) return;
+  db.supMfrs.push({ id:uid(), mfrId:currentUser.id, supId, supName });
+  saveDB(db); renderMfrLinkList(); showToast('已关联供应商 '+supName);
+}
+
+function linkMfrToMer(merId, merName) {
+  if(!db.mfrMers) db.mfrMers = [];
+  if(db.mfrMers.find(x=>x.mfrId===currentUser.id&&x.merId===merId)) return;
+  db.mfrMers.push({ id:uid(), mfrId:currentUser.id, merId, merName });
+  saveDB(db); renderMfrLinkList(); showToast('已关联商户 '+merName);
+}
+
+function addMfrShip() {
+  const to = document.getElementById('ms-to').value.trim();
+  const prod = document.getElementById('ms-prod').value.trim();
+  if(!to) return showErr('ms-msg','请输入收货方');
+  if(!prod) return showErr('ms-msg','请输入产品名称');
+  clearErr('ms-msg');
+  let msReportRef = '', msReportUrl = '';
+  if(msReportMode === 'select') {
+    msReportRef = document.getElementById('ms-report-ref')?.value || '';
+  } else {
+    const rn = document.getElementById('ms-report-name');
+    msReportUrl = rn?.dataset?.dataUrl || '';
+    // 上传新报告时同步到检测报告页
+    if(rn?.dataset?.file) {
+      if(!db.reports) db.reports = [];
+      db.reports.push({ id:uid(), mfrId:currentUser.id, name:prod+' 发货报告', org:'', no:'',
+        date:document.getElementById('ms-date').value||today(), expire:'', result:'pass',
+        fileUrl: msReportUrl, ts:Date.now() });
+    }
+  }
+  db.mfrShipments.push({ id:uid(), mfrId:currentUser.id, to, prod,
+    batch:document.getElementById('ms-batch').value.trim(), qty:document.getElementById('ms-qty').value.trim(),
+    date:document.getElementById('ms-date').value, reportRef:msReportRef, reportUrl:msReportUrl, ts:Date.now() });
+  saveDB(db);
+  hideModal('add-mfr-ship-modal');
+  renderMfrShip();
+  renderMfrReports();
+  ['ms-to','ms-prod','ms-batch','ms-qty'].forEach(id => { const e=document.getElementById(id); if(e) e.value=''; });
+  const msRn = document.getElementById('ms-report-name'); if(msRn) { msRn.textContent=''; msRn.dataset.file=''; msRn.dataset.dataUrl=''; }
+  showToast('发货记录已添加');
+}
+
+function delMfrShip(id) {
+  db.mfrShipments = db.mfrShipments.filter(s => s.id !== id);
+  saveDB(db);
+  renderMfrShip();
+  showToast('已删除');
+}
+
+function renderMfrSups() {
+  renderMfrLinkList();
+}
+
+// ==================== 市场监管端 ====================
+function renderOpOverview() {
+  const allMers = db.users.filter(u => u.role === 'mer');
+  const allSups = db.users.filter(u => u.role === 'sup');
+  const allMfrs = db.users.filter(u => u.role === 'mfr');
+  const pendingAudit = db.pendingReg.length;
+  document.getElementById('op-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${allMers.length}</div><div class="stat-label">商户数量</div></div>
+    <div class="stat-card"><div class="stat-num">${allSups.length}</div><div class="stat-label">供应商</div></div>
+    <div class="stat-card"><div class="stat-num">${allMfrs.length}</div><div class="stat-label">生产厂家</div></div>
+    <div class="stat-card"><div class="stat-num" style="${pendingAudit?'color:var(--rd)':''}">${pendingAudit}</div><div class="stat-label">待审核</div></div>`;
+  // 全局证件预警
+  const allQuals = db.quals.filter(q => {
+    const d = daysLeft(q.expire);
+    return d <= 30;
+  });
+  const warnEl = document.getElementById('op-qual-warns');
+  if(!allQuals.length) {
+    warnEl.innerHTML = '<div class="alert alert-ok"><i class="ti ti-shield-check"></i> 暂无证件到期预警</div>';
+    return;
+  }
+  warnEl.innerHTML = allQuals.map(q => {
+    const owner = db.users.find(u => u.id === q.ownerId);
+    const d = daysLeft(q.expire);
+    return `<div class="expire-warn">
+      <div style="font-weight:500;">${owner?.name||'—'} · ${q.type}</div>
+      <div style="font-size:12px;">到期：${q.expire}（剩余 <b style="color:var(--rd);">${d}</b> 天）</div>
+    </div>`;
+  }).join('');
+}
+
+function renderOpMers() {
+  const kw = (document.getElementById('op-mer-search').value||'').toLowerCase();
+  let items = db.users.filter(u => u.role === 'mer');
+  if(kw) items = items.filter(u => u.name.toLowerCase().includes(kw));
+  const el = document.getElementById('op-mers-list');
+  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-building-off"></i>暂无商户</div>'; return; }
+  el.innerHTML = items.map(u => `
+    <div class="item">
+      <div class="item-row">
+        <div>
+          <div class="item-title">${u.name}</div>
+          <div class="item-sub">手机：${u.phone} · ${u.addr||''}</div>
+        </div>
+        <span class="tag ${u.status==='pass'?'tag-pass':u.status==='reject'?'tag-reject':'tag-pending'}">${u.status==='pass'?'已认证':u.status==='reject'?'已拒绝':'待审核'}</span>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-s btn-sm" onclick="opResetPw('${u.id}','${u.name}')"><i class="ti ti-key"></i> 重置密码</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderOpSups() {
+  const items = db.users.filter(u => u.role === 'sup');
+  const el = document.getElementById('op-sups-list');
+  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-truck-off"></i>暂无供应商</div>'; return; }
+  el.innerHTML = items.map(u => `
+    <div class="item">
+      <div class="item-row">
+        <div><div class="item-title">${u.name}</div><div class="item-sub">手机：${u.phone} · ${u.addr||''}</div></div>
+        <span class="tag ${u.status==='pass'?'tag-pass':'tag-pending'}">${u.status==='pass'?'已认证':'待审核'}</span>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-s btn-sm" onclick="opResetPw('${u.id}','${u.name}')"><i class="ti ti-key"></i> 重置密码</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderOpMfrs() {
+  const items = db.users.filter(u => u.role === 'mfr');
+  const el = document.getElementById('op-mfrs-list');
+  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-building-factory-off"></i>暂无厂家</div>'; return; }
+  el.innerHTML = items.map(u => `
+    <div class="item">
+      <div class="item-row">
+        <div><div class="item-title">${u.name}</div><div class="item-sub">手机：${u.phone} · ${u.addr||''}</div></div>
+        <span class="tag ${u.status==='pass'?'tag-pass':'tag-pending'}">${u.status==='pass'?'已认证':'待审核'}</span>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-s btn-sm" onclick="opResetPw('${u.id}','${u.name}')"><i class="ti ti-key"></i> 重置密码</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderOpAudit() {
+  const el = document.getElementById('op-audit-list');
+  if(!db.pendingReg.length) { el.innerHTML = '<div class="empty"><i class="ti ti-check-circle"></i>暂无待审核账号</div>'; return; }
+  el.innerHTML = db.pendingReg.map(p => {
+    const u = db.users.find(x => x.id === p.userId);
+    if(!u) return '';
+    const roleMap = { mer:'商户', sup:'供应商', mfr:'生产厂家' };
+    return `<div class="item">
+      <div class="item-row">
+        <div>
+          <div class="item-title">${u.name}</div>
+          <div class="item-sub">${roleMap[u.role]||u.role} · ${u.phone} · ${fmt(p.ts)}</div>
+          ${u.uscc ? `<div class="item-sub">信用代码：${u.uscc}</div>` : ''}
+          ${u.addr ? `<div class="item-sub">地址：${u.addr}</div>` : ''}
+        </div>
+        <span class="tag tag-pending">待审核</span>
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-p btn-sm" onclick="auditPass('${p.id}','${u.id}')"><i class="ti ti-check"></i> 通过认证</button>
+        <button class="btn btn-danger btn-sm" onclick="auditReject('${p.id}','${u.id}')"><i class="ti ti-x"></i> 拒绝</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateAuditBadge() {
+  const cnt = db.pendingReg.length;
+  const tab = document.getElementById('op-audit-tab');
+  if(!tab) return;
+  const old = tab.querySelector('.badge');
+  if(old) old.remove();
+  if(cnt > 0) tab.insertAdjacentHTML('beforeend', `<span class="badge">${cnt}</span>`);
+}
+
+function auditPass(pid, uid) {
+  const u = db.users.find(x => x.id === uid);
+  if(u) u.status = 'pass';
+  db.pendingReg = db.pendingReg.filter(p => p.id !== pid);
+  saveDB(db);
+  renderOpAudit();
+  renderOpOverview();
+  updateAuditBadge();
+  showToast('已通过认证');
+}
+
+function auditReject(pid, uid) {
+  const u = db.users.find(x => x.id === uid);
+  if(u) u.status = 'reject';
+  db.pendingReg = db.pendingReg.filter(p => p.id !== pid);
+  saveDB(db);
+  renderOpAudit();
+  renderOpOverview();
+  updateAuditBadge();
+  showToast('已拒绝');
+}
+
+function opResetPw(uid, name) {
+  pendingResetUid = uid;
+  document.getElementById('op-reset-info').innerHTML = `重置 <b>${name}</b> 的登录密码`;
+  document.getElementById('op-new-pw').value = '';
+  clearErr('op-reset-msg');
+  showModal('op-reset-modal');
+}
+
+function doOpReset() {
+  const pw = document.getElementById('op-new-pw').value.trim();
+  if(pw.length < 6) return showErr('op-reset-msg','密码至少6位');
+  const u = db.users.find(x => x.id === pendingResetUid);
+  if(!u) return;
+  u.pw = pw;
+  saveDB(db);
+  hideModal('op-reset-modal');
+  showToast('密码已重置');
+  pendingResetUid = null;
+}
+
+// ==================== 公示页 ====================
+function renderPubPage(token) {
+  const mer = db.users.find(u => (u.qrToken === token || u.id === token) && u.role === 'mer');
+  if(!mer) {
+    go('login');
+    showToast('公示页不存在或链接已失效');
+    return;
+  }
+  go('pub');
+  document.getElementById('pub-shop-name').textContent = mer.name;
+  // 证件
+  const certs = db.quals.filter(q => q.ownerId === mer.id && (q.type === '营业执照' || q.type === '食品经营许可证'));
+  const health = db.quals.filter(q => q.ownerId === mer.id && q.type === '员工健康证');
+  const renderCert = (arr, emptyTxt) => {
+    if(!arr.length) return `<div style="font-size:13px;color:var(--g4);">${emptyTxt}</div>`;
+    return arr.map(q => {
+      const d = daysLeft(q.expire);
+      return `<div class="cert-card">
+        <div class="cert-icon"><i class="ti ti-certificate"></i></div>
+        <div>
+          <div style="font-weight:500;">${q.type}</div>
+          <div style="font-size:12px;color:var(--g5);">编号：${q.no||'—'}</div>
+          <div style="font-size:12px;color:${d<0?'var(--rd)':d<=30?'var(--or)':'var(--gr)'};">
+            ${d<0?'⚠️ 已过期':d<=30?`⚠️ 剩余${d}天`:'✓ 有效'} · 至 ${q.expire}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  };
+  document.getElementById('pub-certs').innerHTML = renderCert(certs, '暂未上传营业证照');
+  document.getElementById('pub-health').innerHTML = renderCert(health, '暂未上传员工健康证');
+  // 台账（最近20条，保密的只显示品类）
+  const ledger = db.ledger.filter(l => l.merId === mer.id).sort((a,b) => b.ts - a.ts).slice(0,20);
+  const ledgerEl = document.getElementById('pub-ledger');
+  if(!ledger.length) { ledgerEl.innerHTML = '<div style="font-size:13px;color:var(--g4);">暂无台账记录</div>'; return; }
+  ledgerEl.innerHTML = `<table style="width:100%;font-size:13px;border-collapse:collapse;">
+    <thead><tr style="background:var(--g1);">
+      <th style="padding:8px;text-align:left;border-bottom:1px solid var(--g2);">品名</th>
+      <th style="padding:8px;text-align:left;border-bottom:1px solid var(--g2);">品类</th>
+      <th style="padding:8px;text-align:left;border-bottom:1px solid var(--g2);">数量</th>
+      <th style="padding:8px;text-align:left;border-bottom:1px solid var(--g2);">日期</th>
+    </tr></thead>
+    <tbody>${ledger.map(l => `<tr style="border-bottom:1px solid var(--g2);">
+      <td style="padding:8px;">${l.secret ? '<span class="tag tag-secret">保密</span>' : l.name}</td>
+      <td style="padding:8px;">${l.cat}</td>
+      <td style="padding:8px;">${l.secret ? '—' : l.qty}</td>
+      <td style="padding:8px;">${l.date}</td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+// ==================== 初始化 ====================
+window.onload = function() {
+  db = loadDB();
+  // 检查URL参数
+  const params = new URLSearchParams(window.location.search);
+  if(params.has('pub')) {
+    renderPubPage(params.get('pub'));
+    return;
+  }
+  // 默认激活商户角色按钮
+  const firstRoleBtn = document.querySelector('.role-btn');
+  if(firstRoleBtn) setRole('mer', firstRoleBtn);
+  // 初始化今天日期
+  const dateFields = ['al-date','ao-date','ship-date','rpt-date','ms-date'];
+  dateFields.forEach(id => { const e=document.getElementById(id); if(e) e.value=today(); });
+};
+
+// 打开弹窗时按需填充数据
+const _origShowModal = showModal;
+window.showModal = function(id) {
+  _origShowModal(id);
+  if(id === 'add-ship-modal') { populateShipMerSelect(); populateShipReportSelect(); }
+  if(id === 'add-mfr-ship-modal') populateMsReportSelect();
+  if(id === 'add-order-modal') populateSupSelect();
+  if(id === 'link-sup-modal') renderLinkSupList();
+  if(id === 'link-mfr-modal') renderLinkMfrList();
+  if(id === 'link-mfr2-modal') renderLinkMfr2List();
+  if(id === 'add-product-modal') {
+    const sel = document.getElementById('prod-report-ref');
+    if(sel && currentUser) {
+      const myReports = db.supMfrs.filter(x=>x.supId===currentUser.id).flatMap(x => db.reports.filter(r=>r.mfrId===x.mfrId));
+      sel.innerHTML = '<option value="">-- 暂不关联 --</option>' + myReports.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+    }
+  }
+};
+</script>
+</body>
+</html>
