@@ -175,13 +175,10 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 </div>
 <div class="itabs" id="mer-tabs">
   <div class="itab on" onclick="mT('overview',this)">总览</div>
-  <div class="itab" onclick="mT('ledger',this)">进货台账</div>
+  <div class="itab" id="mer-ledger-tab" onclick="mT('ledger',this)">收货台账</div>
   <div class="itab" onclick="mT('order',this)">要货申请</div>
-  <div class="itab" id="mer-receive-tab" onclick="mT('receive',this)">待收货</div>
   <div class="itab" onclick="mT('suppliers',this)">供应商库</div>
   <div class="itab" onclick="mT('qual',this)">店铺资质</div>
-  <div class="itab" onclick="mT('qrcode',this)">二维码</div>
-  <div class="itab" onclick="mT('invite',this)">邀请入驻</div>
 </div>
 
 <!-- 总览 -->
@@ -190,9 +187,9 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div class="card" id="mer-qual-warn"></div>
 </div>
 
-<!-- 进货台账 -->
-<div class="pane" id="m-ledger">
-  <div class="search-bar">
+<!-- 收货台账（合并进货台账+待收货） -->
+<div class="pane on" id="m-ledger">
+  <div class="search-bar" style="margin-bottom:8px;">
     <input class="form-input" id="ledger-search" placeholder="搜索品名/供应商..." oninput="renderLedger()">
     <button class="btn btn-p" onclick="showModal('add-ledger-modal')"><i class="ti ti-plus"></i> 补充入账</button>
   </div>
@@ -207,66 +204,56 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div class="list" id="order-list"></div>
 </div>
 
-<!-- 待收货 -->
-<div class="pane" id="m-receive">
-  <div class="list" id="receive-list"></div>
-</div>
-
-<!-- 供应商库 -->
+<!-- 供应商库（含邀请入驻） -->
 <div class="pane" id="m-suppliers">
   <div style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap;">
     <button class="btn btn-p" onclick="showModal('add-supplier-modal')"><i class="ti ti-plus"></i> 手动添加</button>
-    <button class="btn btn-s" onclick="showModal('link-sup-modal')"><i class="ti ti-link"></i> 关联平台供应商</button>
-    <button class="btn btn-s" onclick="showModal('link-mfr-modal')"><i class="ti ti-building-factory-2"></i> 直接关联厂家</button>
+    <button class="btn btn-s" onclick="showModal('link-sup-modal')"><i class="ti ti-link"></i> 关联供应商</button>
+    <button class="btn btn-s" onclick="showModal('link-mfr-modal')"><i class="ti ti-building-factory-2"></i> 关联厂家</button>
   </div>
   <div class="list" id="mer-suppliers-list"></div>
+  <div class="divider"></div>
+  <div class="section-title"><i class="ti ti-user-plus"></i> 邀请入驻</div>
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;">
+    <select class="form-input" id="invite-type" style="flex:1;max-width:160px;">
+      <option value="sup">邀请供应商</option>
+      <option value="mfr">邀请生产厂家</option>
+    </select>
+    <button class="btn btn-p" onclick="genInvite()"><i class="ti ti-link"></i> 生成链接</button>
+  </div>
+  <div id="invite-result" style="display:none;">
+    <div style="display:flex;gap:8px;">
+      <input class="form-input" id="invite-link" readonly style="font-size:12px;">
+      <button class="btn btn-s btn-sm" onclick="copyInvite()"><i class="ti ti-copy"></i></button>
+    </div>
+    <div class="alert alert-ok" style="margin-top:8px;font-size:12px;">
+      <i class="ti ti-brand-wechat"></i>
+      <span>复制链接发送给对方，对方注册后自动关联您的店铺</span>
+    </div>
+  </div>
 </div>
 
-<!-- 店铺资质 -->
+<!-- 店铺资质（含公示页预览+二维码） -->
 <div class="pane" id="m-qual">
-  <div style="margin-bottom:10px;">
-    <button class="btn btn-p" onclick="showModal('add-qual-modal')"><i class="ti ti-plus"></i> 添加证件</button>
+  <!-- 证件管理 -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <div class="section-title" style="margin:0;"><i class="ti ti-certificate"></i> 证件管理</div>
+    <button class="btn btn-p btn-sm" onclick="showModal('add-qual-modal')"><i class="ti ti-plus"></i> 添加证件</button>
   </div>
   <div id="mer-qual-list"></div>
-</div>
-
-<!-- 二维码 -->
-<div class="pane" id="m-qrcode">
-  <div class="card" style="text-align:center;">
-    <canvas id="qr-cv" width="200" height="200" style="margin:0 auto;display:block;"></canvas>
-    <div id="qr-nm" style="margin-top:12px;font-weight:600;font-size:16px;"></div>
+  <div class="divider"></div>
+  <!-- 公示页预览（顾客扫码看到的内容） -->
+  <div class="section-title"><i class="ti ti-eye"></i> 公示页预览（顾客扫码看到的内容）</div>
+  <div id="mer-pub-preview" style="background:var(--g1);border-radius:var(--r2);padding:12px;margin-bottom:12px;"></div>
+  <!-- 二维码 -->
+  <div class="divider"></div>
+  <div class="section-title"><i class="ti ti-qrcode"></i> 店铺二维码</div>
+  <div style="text-align:center;padding:10px 0;">
+    <canvas id="qr-cv" width="180" height="180" style="margin:0 auto;display:block;"></canvas>
+    <div id="qr-nm" style="margin-top:8px;font-weight:600;font-size:15px;"></div>
     <div id="qr-url" style="font-size:11px;color:var(--g4);margin-top:4px;word-break:break-all;padding:0 10px;"></div>
-    <div style="margin-top:16px;display:flex;gap:8px;justify-content:center;">
-      <button class="btn btn-p" onclick="dlQR()"><i class="ti ti-download"></i> 下载二维码</button>
-      <button class="btn btn-s" onclick="pvPub()"><i class="ti ti-eye"></i> 预览公示</button>
-    </div>
-  </div>
-</div>
-
-<!-- 邀请入驻 -->
-<div class="pane" id="m-invite">
-  <div class="card">
-    <div class="section-title"><i class="ti ti-user-plus"></i> 邀请供应商/厂家入驻</div>
-    <div class="form-item">
-      <label class="form-label">邀请对象</label>
-      <select class="form-input" id="invite-type">
-        <option value="sup">供应商</option>
-        <option value="mfr">生产厂家</option>
-      </select>
-    </div>
-    <button class="btn btn-p" onclick="genInvite()"><i class="ti ti-link"></i> 生成邀请链接</button>
-    <div id="invite-result" style="margin-top:14px;display:none;">
-      <div class="form-item">
-        <label class="form-label">邀请链接</label>
-        <div style="display:flex;gap:8px;">
-          <input class="form-input" id="invite-link" readonly>
-          <button class="btn btn-s" onclick="copyInvite()"><i class="ti ti-copy"></i></button>
-        </div>
-      </div>
-      <div class="alert alert-ok" style="margin-top:8px;">
-        <i class="ti ti-brand-wechat"></i>
-        <span>微信分享：复制链接后，在微信中粘贴发送给对方，对方点击链接即可完成注册并关联到您的店铺。</span>
-      </div>
+    <div style="margin-top:12px;">
+      <button class="btn btn-p" onclick="dlQRPrint()"><i class="ti ti-printer"></i> 下载打印版二维码</button>
     </div>
   </div>
 </div>
@@ -280,10 +267,10 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 </div>
 <div class="itabs">
   <div class="itab on" onclick="supT('order',this)">要货申请</div>
-  <div class="itab" onclick="supT('ship',this)">主动发货</div>
+  <div class="itab" onclick="supT('ship',this)">收发货明细</div>
+  <div class="itab" onclick="supT('reports',this)">检测报告</div>
   <div class="itab" onclick="supT('products',this)">我的产品</div>
-  <div class="itab" onclick="supT('mfrs',this)">关联厂家</div>
-  <div class="itab" onclick="supT('mers',this)">关联商户</div>
+  <div class="itab" onclick="supT('links',this)">关联管理</div>
   <div class="itab" onclick="supT('qual',this)">供应商资质</div>
 </div>
 <div class="pane on" id="sup-order">
@@ -291,9 +278,27 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 </div>
 <div class="pane" id="sup-ship">
   <div style="margin-bottom:10px;">
-    <button class="btn btn-p" onclick="showModal('add-ship-modal')"><i class="ti ti-truck"></i> 发起发货通知</button>
+    <button class="btn btn-p" onclick="showModal('add-ship-modal')"><i class="ti ti-truck"></i> 新增发货</button>
+    <button class="btn btn-s" style="margin-left:8px;" onclick="showModal('add-sup-receive-modal')"><i class="ti ti-package-import"></i> 新增收货</button>
   </div>
   <div class="list" id="sup-ship-list"></div>
+</div>
+<!-- 供应商检测报告 -->
+<div class="pane" id="sup-reports">
+  <div style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap;">
+    <button class="btn btn-p" onclick="showModal('add-sup-report-modal')"><i class="ti ti-plus"></i> 上传报告</button>
+    <button class="btn btn-s" onclick="showModal('batch-sup-report-modal')"><i class="ti ti-files"></i> 批量上传</button>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:10px;">
+    <select class="form-input" id="sup-rpt-cat" oninput="renderSupReports()" style="max-width:130px;">
+      <option value="">全部品类</option>
+      <option>猪肉及制品</option><option>牛羊肉</option><option>禽肉</option>
+      <option>水产品</option><option>蔬菜</option><option>水果</option>
+      <option>粮油</option><option>调味品</option><option>饮料</option><option>其他</option>
+    </select>
+    <input class="form-input" id="sup-rpt-search" placeholder="搜索产品名称..." oninput="renderSupReports()">
+  </div>
+  <div class="list" id="sup-reports-list"></div>
 </div>
 <div class="pane" id="sup-products">
   <div style="margin-bottom:10px;">
@@ -301,14 +306,15 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   </div>
   <div class="list" id="sup-products-list"></div>
 </div>
-<div class="pane" id="sup-mfrs">
-  <div style="margin-bottom:10px;">
-    <button class="btn btn-p" onclick="showModal('link-mfr2-modal')"><i class="ti ti-plus"></i> 关联厂家</button>
+<!-- 关联管理（合并厂家/供应商/商户） -->
+<div class="pane" id="sup-links">
+  <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+    <button class="btn btn-p btn-sm" id="slink-tab-mfr" onclick="switchSupLinkTab('mfr')">厂家</button>
+    <button class="btn btn-s btn-sm" id="slink-tab-sup" onclick="switchSupLinkTab('sup')">供应商</button>
+    <button class="btn btn-s btn-sm" id="slink-tab-mer" onclick="switchSupLinkTab('mer')">商户</button>
   </div>
+  <div class="search-bar"><input class="form-input" id="sup-link-search" placeholder="搜索名称..." oninput="renderSupLinkList()"></div>
   <div class="list" id="sup-mfrs-list"></div>
-</div>
-<div class="pane" id="sup-mers">
-  <div class="list" id="sup-mers-list"></div>
 </div>
 <div class="pane" id="sup-qual">
   <div style="margin-bottom:10px;">
@@ -501,9 +507,15 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 <div class="modal-c">
   <div class="modal-h"><h3>补充入账</h3><button class="btn-icon" onclick="hideModal('add-ledger-modal')"><i class="ti ti-x"></i></button></div>
   <div class="modal-b">
-    <div class="form-item">
-      <label class="form-label">商品名称 *</label>
-      <input class="form-input" id="al-name" placeholder="如：猪肉、蔬菜包">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div>
+        <label class="form-label">商品名称 *</label>
+        <input class="form-input" id="al-name" placeholder="如：猪肉">
+      </div>
+      <div>
+        <label class="form-label">数量/规格 *</label>
+        <input class="form-input" id="al-qty" placeholder="如：50kg">
+      </div>
     </div>
     <div class="form-item">
       <label class="form-label">品类</label>
@@ -514,43 +526,37 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       </select>
     </div>
     <div class="form-item">
-      <label class="form-label">数量/规格 *</label>
-      <input class="form-input" id="al-qty" placeholder="如：50kg、100箱">
-    </div>
-    <div class="form-item">
       <label class="form-label">供应商</label>
       <input class="form-input" id="al-sup" placeholder="输入关键字搜索已关联供应商/厂家" oninput="filterAlSup(this.value)" autocomplete="off">
       <div id="al-sup-dropdown" style="display:none;border:1px solid var(--g2);border-radius:var(--r);background:var(--w);max-height:150px;overflow-y:auto;margin-top:2px;box-shadow:var(--sh);"></div>
     </div>
-    <div class="form-item">
-      <label class="form-label">进货日期</label>
-      <input class="form-input" id="al-date" type="date">
-    </div>
-    <div class="form-item">
-      <label class="form-label">生产日期</label>
-      <input class="form-input" id="al-produce-date" type="date">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div>
+        <label class="form-label">进货日期</label>
+        <input class="form-input" id="al-date" type="date">
+      </div>
+      <div>
+        <label class="form-label">生产日期</label>
+        <input class="form-input" id="al-produce-date" type="date">
+      </div>
     </div>
     <div class="form-item">
       <label class="form-label">批次号</label>
       <input class="form-input" id="al-batch" placeholder="生产批次号（选填）">
     </div>
-    <div class="form-item">
-      <label class="form-label">检测报告/合格证（可选）</label>
-      <div class="upload-btns" style="display:flex;gap:8px;margin-bottom:6px;">
-        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('al-report-input','image/*')"><i class="ti ti-camera"></i> 拍照</button>
-        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('al-report-input','image/*,application/pdf')"><i class="ti ti-photo"></i> 相册/文件</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+      <div>
+        <label class="form-label">检测报告/合格证</label>
+        <button type="button" class="btn btn-s btn-sm" style="width:100%;margin-top:2px;" onclick="triggerFileInput('al-report-input','image/*,application/pdf')"><i class="ti ti-upload"></i> 上传</button>
+        <input type="file" id="al-report-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'al-report-name')">
+        <div id="al-report-name" style="font-size:11px;color:var(--gr);margin-top:4px;"></div>
       </div>
-      <input type="file" id="al-report-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'al-report-name')">
-      <div id="al-report-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
-    </div>
-    <div class="form-item">
-      <label class="form-label">购货小票（可选）</label>
-      <div class="upload-btns" style="display:flex;gap:8px;margin-bottom:6px;">
-        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('al-ticket-input','image/*')"><i class="ti ti-camera"></i> 拍照</button>
-        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('al-ticket-input','image/*,application/pdf')"><i class="ti ti-photo"></i> 相册/文件</button>
+      <div>
+        <label class="form-label">购货小票/发票</label>
+        <button type="button" class="btn btn-s btn-sm" style="width:100%;margin-top:2px;" onclick="triggerFileInput('al-ticket-input','image/*,application/pdf')"><i class="ti ti-upload"></i> 上传</button>
+        <input type="file" id="al-ticket-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'al-ticket-name')">
+        <div id="al-ticket-name" style="font-size:11px;color:var(--gr);margin-top:4px;"></div>
       </div>
-      <input type="file" id="al-ticket-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'al-ticket-name')">
-      <div id="al-ticket-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
       <input type="checkbox" id="al-secret">
@@ -595,6 +601,38 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div class="modal-f">
     <button class="btn btn-s" onclick="hideModal('add-order-modal')">取消</button>
     <button class="btn btn-p" onclick="addOrder()">提交申请</button>
+  </div>
+</div>
+</div>
+
+<!-- 供应商标记发货确认弹窗 -->
+<div class="modal h" id="ship-order-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>确认发货明细</h3><button class="btn-icon" onclick="hideModal('ship-order-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div id="ship-order-info" style="margin-bottom:12px;"></div>
+    <div class="form-item"><label class="form-label">实际发货数量</label><input class="form-input" id="so-qty" placeholder="确认数量"></div>
+    <div class="form-item"><label class="form-label">预计到货日期</label><input class="form-input" id="so-date" type="date"></div>
+    <div class="form-item">
+      <label class="form-label">附质检报告</label>
+      <div style="display:flex;gap:8px;margin-bottom:6px;">
+        <button type="button" class="btn btn-s btn-sm" onclick="toggleSoReportMode('select')" id="so-rpt-btn-sel" style="border-color:var(--gr);color:var(--gr);">选取已有报告</button>
+        <button type="button" class="btn btn-s btn-sm" onclick="toggleSoReportMode('upload')" id="so-rpt-btn-upl">上传报告</button>
+      </div>
+      <div id="so-rpt-select-area">
+        <select class="form-input" id="so-report-ref"><option value="">-- 暂不附报告 --</option></select>
+      </div>
+      <div id="so-rpt-upload-area" style="display:none;">
+        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('so-report-input','image/*,application/pdf')"><i class="ti ti-upload"></i> 上传报告</button>
+        <input type="file" id="so-report-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'so-report-name')">
+        <div id="so-report-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
+      </div>
+    </div>
+    <div class="msg-err" id="so-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('ship-order-modal')">取消</button>
+    <button class="btn btn-p" onclick="doShipOrderConfirm()"><i class="ti ti-truck"></i> 确认发货</button>
   </div>
 </div>
 </div>
@@ -680,10 +718,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <div class="form-item"><label class="form-label">持证人/持证主体</label><input class="form-input" id="aq-holder" placeholder="持证人姓名或企业名称"></div>
     <div class="form-item">
       <label class="form-label">证件照片</label>
-      <div style="display:flex;gap:8px;margin-bottom:6px;">
-        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('aq-file-input','image/*')"><i class="ti ti-camera"></i> 拍照</button>
-        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('aq-file-input','image/*,application/pdf')"><i class="ti ti-photo"></i> 相册/文件</button>
-      </div>
+      <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('aq-file-input','image/*,application/pdf')"><i class="ti ti-upload"></i> 上传</button>
       <input type="file" id="aq-file-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'aq-file-name')">
       <div id="aq-file-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
     </div>
@@ -718,10 +753,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
         <select class="form-input" id="ship-report-ref"><option value="">-- 暂不附报告 --</option></select>
       </div>
       <div id="ship-rpt-upload-area" style="display:none;">
-        <div style="display:flex;gap:8px;margin-bottom:6px;">
-          <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('ship-report-input','image/*')"><i class="ti ti-camera"></i> 拍照</button>
-          <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('ship-report-input','image/*,application/pdf')"><i class="ti ti-photo"></i> 相册/文件</button>
-        </div>
+        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('ship-report-input','image/*,application/pdf')"><i class="ti ti-upload"></i> 上传</button>
         <input type="file" id="ship-report-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'ship-report-name')">
         <div id="ship-report-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
       </div>
@@ -751,8 +783,14 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     </div>
     <div class="form-item"><label class="form-label">规格/单位</label><input class="form-input" id="prod-spec" placeholder="如：500g/袋、1kg/盒"></div>
     <div class="form-item">
-      <label class="form-label">关联厂家检测报告</label>
-      <select class="form-input" id="prod-report-ref"><option value="">-- 暂不关联 --</option></select>
+      <label class="form-label">关联供货商/厂家</label>
+      <select class="form-input" id="prod-source-ref" onchange="onProdSourceChange()">
+        <option value="">-- 选择关联的供货商或厂家 --</option>
+      </select>
+    </div>
+    <div class="form-item">
+      <label class="form-label">关联检测报告</label>
+      <select class="form-input" id="prod-report-ref"><option value="">-- 先选择供货商/厂家 --</option></select>
     </div>
     <div class="msg-err" id="prod-msg"></div>
   </div>
@@ -818,7 +856,8 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     <div class="form-item"><label class="form-label">有效期至</label><input class="form-input" id="rpt-expire" type="date"></div>
     <div class="form-item">
       <label class="form-label">报告文件</label>
-      <div class="upload-area" onclick="fakePick('rpt-file')"><i class="ti ti-file-upload" style="font-size:24px;"></i><div style="margin-top:6px;font-size:13px;">点击上传PDF/图片</div></div>
+      <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('rpt-file-input','image/*,application/pdf')"><i class="ti ti-upload"></i> 上传报告文件</button>
+      <input type="file" id="rpt-file-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'rpt-file-name')">
       <div id="rpt-file-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
     </div>
     <div class="form-item"><label class="form-label">检测结论</label>
@@ -864,6 +903,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
       <div id="ms-to-dropdown" style="display:none;border:1px solid var(--g2);border-radius:var(--r);background:var(--w);max-height:150px;overflow-y:auto;margin-top:2px;box-shadow:var(--sh);"></div>
     </div>
     <div class="form-item"><label class="form-label">产品名称 *</label><input class="form-input" id="ms-prod" placeholder="产品名称"></div>
+    <div class="form-item"><label class="form-label">生产日期</label><input class="form-input" id="ms-produce-date" type="date"></div>
     <div class="form-item"><label class="form-label">批次号</label><input class="form-input" id="ms-batch" placeholder="生产批次号"></div>
     <div class="form-item"><label class="form-label">数量</label><input class="form-input" id="ms-qty" placeholder="如：100箱"></div>
     <div class="form-item"><label class="form-label">发货日期</label><input class="form-input" id="ms-date" type="date"></div>
@@ -877,10 +917,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
         <select class="form-input" id="ms-report-ref"><option value="">-- 暂不关联 --</option></select>
       </div>
       <div id="ms-rpt-upload-area" style="display:none;">
-        <div style="display:flex;gap:8px;margin-bottom:6px;">
-          <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('ms-report-input','image/*')"><i class="ti ti-camera"></i> 拍照</button>
-          <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('ms-report-input','image/*,application/pdf')"><i class="ti ti-photo"></i> 相册/文件</button>
-        </div>
+        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('ms-report-input','image/*,application/pdf')"><i class="ti ti-upload"></i> 上传</button>
         <input type="file" id="ms-report-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'ms-report-name')">
         <div id="ms-report-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
       </div>
@@ -914,10 +951,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
     </div>
     <div class="form-item">
       <label class="form-label">证件照片</label>
-      <div style="display:flex;gap:8px;margin-bottom:6px;">
-        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('mq-file-input','image/*')"><i class="ti ti-camera"></i> 拍照</button>
-        <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('mq-file-input','image/*,application/pdf')"><i class="ti ti-photo"></i> 相册/文件</button>
-      </div>
+      <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('mq-file-input','image/*,application/pdf')"><i class="ti ti-upload"></i> 上传</button>
       <input type="file" id="mq-file-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'mq-file-name')">
       <div id="mq-file-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
     </div>
@@ -926,6 +960,95 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   <div class="modal-f">
     <button class="btn btn-s" onclick="hideModal('add-mfr-qual-modal')">取消</button>
     <button class="btn btn-p" onclick="addQual('mfr')">确认添加</button>
+  </div>
+</div>
+</div>
+
+<!-- 供应商：新增收货 -->
+<div class="modal h" id="add-sup-receive-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>新增收货记录</h3><button class="btn-icon" onclick="hideModal('add-sup-receive-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item"><label class="form-label">发货方 *</label>
+      <input class="form-input" id="sr-from" placeholder="输入名称搜索已注册厂家/供应商或直接填写" oninput="filterSrFrom(this.value)" autocomplete="off">
+      <div id="sr-from-dropdown" style="display:none;border:1px solid var(--g2);border-radius:var(--r);background:var(--w);max-height:130px;overflow-y:auto;margin-top:2px;box-shadow:var(--sh);"></div>
+    </div>
+    <div class="form-item"><label class="form-label">产品名称 *</label><input class="form-input" id="sr-prod" placeholder="产品名称"></div>
+    <div class="form-item"><label class="form-label">数量</label><input class="form-input" id="sr-qty" placeholder="如：100箱"></div>
+    <div class="form-item"><label class="form-label">收货日期</label><input class="form-input" id="sr-date" type="date"></div>
+    <div class="form-item">
+      <label class="form-label">检测报告</label>
+      <select class="form-input" id="sr-report-ref" style="margin-bottom:6px;"><option value="">-- 暂无关联报告 --</option></select>
+      <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('sr-report-input','image/*,application/pdf')"><i class="ti ti-upload"></i> 上传报告</button>
+      <input type="file" id="sr-report-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'sr-report-name')">
+      <div id="sr-report-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
+    </div>
+    <div class="msg-err" id="sr-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('add-sup-receive-modal')">取消</button>
+    <button class="btn btn-p" onclick="addSupReceive()">确认收货</button>
+  </div>
+</div>
+</div>
+
+<!-- 供应商：单份检测报告 -->
+<div class="modal h" id="add-sup-report-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>上传检测报告</h3><button class="btn-icon" onclick="hideModal('add-sup-report-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="form-item"><label class="form-label">产品名称 *</label><input class="form-input" id="srpt-name" placeholder="被检测产品名称"></div>
+    <div class="form-item"><label class="form-label">品类</label>
+      <select class="form-input" id="srpt-cat">
+        <option>猪肉及制品</option><option>牛羊肉</option><option>禽肉</option>
+        <option>水产品</option><option>蔬菜</option><option>水果</option>
+        <option>粮油</option><option>调味品</option><option>饮料</option><option>其他</option>
+      </select>
+    </div>
+    <div class="form-item"><label class="form-label">检测机构</label><input class="form-input" id="srpt-org" placeholder="出具报告的检测机构"></div>
+    <div class="form-item"><label class="form-label">报告编号</label><input class="form-input" id="srpt-no" placeholder="报告编号"></div>
+    <div class="form-item"><label class="form-label">检测日期</label><input class="form-input" id="srpt-date" type="date"></div>
+    <div class="form-item"><label class="form-label">有效期至</label><input class="form-input" id="srpt-expire" type="date"></div>
+    <div class="form-item"><label class="form-label">检测结论</label>
+      <select class="form-input" id="srpt-result"><option value="pass">合格</option><option value="fail">不合格</option><option value="pending">待出结果</option></select>
+    </div>
+    <div class="form-item">
+      <label class="form-label">报告文件</label>
+      <button type="button" class="btn btn-s btn-sm" onclick="triggerFileInput('srpt-file-input','image/*,application/pdf')"><i class="ti ti-upload"></i> 上传报告文件</button>
+      <input type="file" id="srpt-file-input" accept="image/*,application/pdf" style="display:none" onchange="handleFileSelect(this,'srpt-file-name')">
+      <div id="srpt-file-name" style="font-size:12px;color:var(--gr);margin-top:4px;"></div>
+    </div>
+    <div class="msg-err" id="srpt-msg"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('add-sup-report-modal')">取消</button>
+    <button class="btn btn-p" onclick="addSupReport()">确认上传</button>
+  </div>
+</div>
+</div>
+
+<!-- 供应商：批量检测报告 -->
+<div class="modal h" id="batch-sup-report-modal">
+<div class="modal-c">
+  <div class="modal-h"><h3>批量上传报告</h3><button class="btn-icon" onclick="hideModal('batch-sup-report-modal')"><i class="ti ti-x"></i></button></div>
+  <div class="modal-b">
+    <div class="alert alert-warn" style="margin-bottom:12px;"><i class="ti ti-info-circle"></i><span>文件名即产品名称，批量上传后可逐一补充详情</span></div>
+    <div class="form-item"><label class="form-label">品类（批量适用）</label>
+      <select class="form-input" id="srpt-batch-cat">
+        <option>猪肉及制品</option><option>牛羊肉</option><option>禽肉</option>
+        <option>水产品</option><option>蔬菜</option><option>水果</option>
+        <option>粮油</option><option>调味品</option><option>饮料</option><option>其他</option>
+      </select>
+    </div>
+    <button type="button" class="btn btn-s" style="width:100%;padding:16px;" onclick="triggerFileInput('srpt-batch-input','image/*,application/pdf')">
+      <i class="ti ti-upload"></i> 选择多个文件上传
+    </button>
+    <input type="file" id="srpt-batch-input" accept="image/*,application/pdf" multiple style="display:none" onchange="handleBatchSupReportSelect(this)">
+    <div id="srpt-batch-list" style="margin-top:10px;"></div>
+  </div>
+  <div class="modal-f">
+    <button class="btn btn-s" onclick="hideModal('batch-sup-report-modal')">取消</button>
+    <button class="btn btn-p" onclick="doBatchSupUpload()">确认上传</button>
   </div>
 </div>
 </div>
@@ -953,7 +1076,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 // ==================== 数据层 ====================
 const DB_KEY = 'fss12';
 
-const DB_VER = 5; // 升版本号强制重建数据
+const DB_VER = 6; // 升版本号强制重建数据
 
 function loadDB() {
   try {
@@ -964,7 +1087,8 @@ function loadDB() {
     if(!db.__ver || db.__ver < DB_VER) return initDB();
     // 字段兜底
     const arr = ['users','ledger','orders','shipments','merSuppliers','quals','reports',
-                 'mfrShipments','pendingReg','invites','supProducts','supMfrs','supPeers','mfrMers','batchFiles'];
+                 'mfrShipments','pendingReg','invites','supProducts','supMfrs','supPeers','mfrMers',
+                 'supReports','supReceives','batchFiles'];
     arr.forEach(k => { if(!Array.isArray(db[k])) db[k] = []; });
     return db;
   } catch(e) { return initDB(); }
@@ -1181,7 +1305,7 @@ function enterApp(user) {
   if(user.role === 'mer') {
     document.getElementById('mer-shop-name').textContent = user.name;
     go('mer');
-    mT('overview', null);
+    mT('ledger', null);
     renderMerOverview();
     updateReceiveBadge();
   } else if(user.role === 'sup') {
@@ -1263,10 +1387,8 @@ function mT(t, el) {
   switchTabs('#sc-mer', 'mt', 'm', t, el);
   if(t==='ledger') renderLedger();
   if(t==='order') { renderOrders(); populateSupSelect(); }
-  if(t==='receive') renderReceive();
   if(t==='suppliers') renderMerSuppliers();
-  if(t==='qual') renderQuals('mer');
-  if(t==='qrcode') renderQR();
+  if(t==='qual') { renderQuals('mer'); renderMerPubPreview(); renderQR(); }
   if(t==='overview') renderMerOverview();
 }
 function supT(t, el) {
@@ -1274,9 +1396,9 @@ function supT(t, el) {
   switchTabs('#sc-sup', 'supt', 'sup', t, el);
   if(t==='order') renderSupOrders();
   if(t==='ship') renderSupShipments();
-  if(t==='products') renderSupProducts();
-  if(t==='mfrs') renderSupMfrs();
-  if(t==='mers') renderSupMers();
+  if(t==='reports') renderSupReports();
+  if(t==='products') { renderSupProducts(); populateProdSourceSelect(); }
+  if(t==='links') { supLinkTabMode='mfr'; renderSupLinkList(); }
   if(t==='qual') renderQuals('sup');
 }
 function mfrT(t, el) {
@@ -1332,28 +1454,58 @@ function renderMerOverview() {
 
 function renderLedger() {
   if(!currentUser) return;
-  const kw = (document.getElementById('ledger-search').value||'').toLowerCase();
-  let items = db.ledger.filter(l => l.merId === currentUser.id);
-  if(kw) items = items.filter(l => l.name.toLowerCase().includes(kw) || (l.supplier||'').toLowerCase().includes(kw));
-  items.sort((a,b) => b.ts - a.ts);
+  const kw = (document.getElementById('ledger-search')?.value||'').toLowerCase();
+  // 已入账台账
+  let ledgerItems = db.ledger.filter(l => l.merId === currentUser.id);
+  if(kw) ledgerItems = ledgerItems.filter(l => l.name.toLowerCase().includes(kw)||(l.supplier||'').toLowerCase().includes(kw));
+  // 待收货（待确认的发货通知）
+  let pendingItems = db.shipments.filter(s => s.merId === currentUser.id && s.status==='pending');
+  if(kw) pendingItems = pendingItems.filter(s => s.name.toLowerCase().includes(kw)||(s.supName||'').toLowerCase().includes(kw));
+  // 合并按时间排列
+  const allItems = [
+    ...pendingItems.map(s => ({...s, _type:'pending'})),
+    ...ledgerItems.map(l => ({...l, _type:'ledger'}))
+  ].sort((a,b) => b.ts - a.ts);
   const el = document.getElementById('ledger-list');
-  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-clipboard-x"></i>暂无台账记录</div>'; return; }
-  el.innerHTML = items.map(l => `
-    <div class="item">
-      <div class="item-row">
-        <div>
-          <div class="item-title">${l.secret ? '<span class="tag tag-secret">保密</span> ' + l.cat : l.name}</div>
-          <div class="item-sub">${l.secret ? '' : l.cat + ' · '} ${l.qty} · 进货:${l.date}${l.produceDate?' · 生产:'+l.produceDate:''} · ${l.supplier||'—'}${l.batch?' · 批次:'+l.batch:''}</div>
-          ${(l.report||l.ticket) ? `<div class="item-sub" style="color:var(--gr);">${l.report?'<i class="ti ti-file-check"></i> 有报告':''} ${l.ticket?'<i class="ti ti-receipt"></i> 有小票':''}</div>` : ''}
+  if(!allItems.length) { el.innerHTML = '<div class="empty"><i class="ti ti-clipboard-x"></i>暂无台账记录</div>'; return; }
+  el.innerHTML = allItems.map(item => {
+    if(item._type === 'pending') {
+      const s = item;
+      const hasReport = s.report || s.reportRef || s.reportUrl;
+      return `<div class="item" style="border-left:3px solid var(--or);">
+        <div class="item-row">
+          <div>
+            <div class="item-title">${s.name} <span class="tag tag-pending" style="font-size:10px;">待收货</span></div>
+            <div class="item-sub">${s.supName} · ${s.qty} · 预计 ${s.date||'—'}</div>
+            <div class="item-sub">发货时间：${fmt(s.ts)}</div>
+          </div>
         </div>
-        <div style="display:flex;gap:6px;align-items:flex-start;">
-          ${l.report ? '<span class="tag tag-pass"><i class="ti ti-file-check"></i> 有报告</span>' : '<span class="tag tag-grey">无报告</span>'}
+        <div class="item-actions">
+          ${hasReport ? `<button class="btn btn-s btn-sm" onclick="viewReport('${s.id}')"><i class="ti ti-file-search"></i> 查看报告</button>` : ''}
+          <button class="btn btn-p btn-sm" onclick="quickConfirm('${s.id}')"><i class="ti ti-check"></i> 确认收货</button>
+          <button class="btn btn-danger btn-sm" onclick="rejectReceive('${s.id}')"><i class="ti ti-x"></i> 拒收</button>
         </div>
-      </div>
-      <div class="item-actions">
-        <button class="btn btn-s btn-sm" onclick="delLedger('${l.id}')"><i class="ti ti-trash"></i> 删除</button>
-      </div>
-    </div>`).join('');
+      </div>`;
+    } else {
+      const l = item;
+      const hasReport = l.report || l.reportUrl;
+      const hasTicket = l.ticket || l.ticketUrl;
+      return `<div class="item">
+        <div class="item-row">
+          <div style="flex:1;">
+            <div class="item-title">${l.secret ? '<span class="tag tag-secret">保密</span> '+l.cat : l.name}</div>
+            <div class="item-sub">${l.secret?'':l.cat+' · '}${l.qty} · ${l.date}${l.produceDate?' · 生产:'+l.produceDate:''} · ${l.supplier||'—'}${l.batch?' · 批次:'+l.batch:''}</div>
+          </div>
+          <span class="tag tag-pass" style="flex-shrink:0;">已入账</span>
+        </div>
+        <div class="item-actions">
+          ${hasReport ? `<button class="btn btn-s btn-sm" onclick="viewFileUrl('${l.reportUrl||''}','${l.report||''}')"><i class="ti ti-file-search"></i> 查看报告</button>` : ''}
+          ${hasTicket ? `<button class="btn btn-s btn-sm" onclick="viewFileUrl('${l.ticketUrl||''}','${l.ticket||''}')"><i class="ti ti-receipt"></i> 查看小票</button>` : ''}
+          <button class="btn btn-s btn-sm" onclick="delLedger('${l.id}')"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>`;
+    }
+  }).join('');
 }
 
 function filterAlSup(kw) {
@@ -1485,7 +1637,7 @@ function renderReceive() {
 function updateReceiveBadge() {
   if(!currentUser) return;
   const cnt = db.shipments.filter(s => s.merId === currentUser.id && s.status === 'pending').length;
-  const tab = document.querySelector('#sc-mer .itabs .itab:nth-child(4)');
+  const tab = document.getElementById('mer-ledger-tab');
   if(!tab) return;
   const old = tab.querySelector('.badge');
   if(old) old.remove();
@@ -1534,6 +1686,17 @@ function confirmReceive() {
   renderMerOverview();
   showToast('已确认收货，自动生成台账');
   pendingReceiveId = null;
+}
+
+function rejectReceive(sid) {
+  const s = db.shipments.find(x => x.id === sid);
+  if(!s) return;
+  s.status = 'rejected';
+  saveDB(db);
+  renderLedger();
+  updateReceiveBadge();
+  renderMerOverview();
+  showToast('已拒收');
 }
 
 function quickConfirm(sid) {
@@ -1697,6 +1860,28 @@ function addQual(role) {
   showToast('证件已添加');
 }
 
+function viewFileUrl(url, label) {
+  if(!url || !url.startsWith('data:')) {
+    if(label) showToast('文件: '+label);
+    return;
+  }
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;';
+  overlay.onclick = () => document.body.removeChild(overlay);
+  if(url.startsWith('data:image')) {
+    const img = document.createElement('img');
+    img.src = url;
+    img.style.cssText = 'max-width:96%;max-height:85vh;border-radius:8px;';
+    overlay.appendChild(img);
+  } else {
+    const d = document.createElement('div');
+    d.style.cssText = 'color:#fff;font-size:14px;text-align:center;padding:20px;';
+    d.innerHTML = '<i class="ti ti-file-text" style="font-size:48px;display:block;margin-bottom:12px;"></i>'+label+'<br><span style="font-size:12px;opacity:.7;">PDF文件（点击关闭）</span>';
+    overlay.appendChild(d);
+  }
+  document.body.appendChild(overlay);
+}
+
 function viewImage(qualId) {
   const q = db.quals.find(x => x.id === qualId);
   if(!q || !q.fileUrl) return;
@@ -1719,6 +1904,33 @@ function delQual(id) {
   showToast('已删除');
 }
 
+function renderMerPubPreview() {
+  if(!currentUser) return;
+  const el = document.getElementById('mer-pub-preview');
+  if(!el) return;
+  const certs = db.quals.filter(q => q.ownerId===currentUser.id && (q.type==='营业执照'||q.type==='食品经营许可证'));
+  const health = db.quals.filter(q => q.ownerId===currentUser.id && q.type==='员工健康证');
+  const renderCertMini = arr => arr.length ? arr.map(q => {
+    const d = q.expire==='longterm' ? 999 : daysLeft(q.expire);
+    const hasImg = q.fileUrl && q.fileUrl.startsWith('data:image');
+    return `<div style="background:var(--w);border-radius:var(--r);padding:10px;margin-bottom:6px;display:flex;gap:10px;align-items:flex-start;">
+      ${hasImg ? `<img src="${q.fileUrl}" style="width:60px;height:45px;object-fit:cover;border-radius:4px;cursor:pointer;flex-shrink:0;" onclick="viewFileUrl('${q.fileUrl}','${q.type}')">` : '<div style="width:60px;height:45px;background:var(--gl);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;">📄</div>'}
+      <div>
+        <div style="font-weight:500;font-size:13px;">${q.type}</div>
+        <div style="font-size:11px;color:var(--g5);">编号：${q.no||'—'}</div>
+        <div style="font-size:11px;color:${d<0?'var(--rd)':d<=30?'var(--or)':'var(--gr)'};">${q.expire==='longterm'?'长期有效':d<0?'已过期':d<=30?'剩'+d+'天':'有效'} · 至 ${q.expire==='longterm'?'—':q.expire}</div>
+      </div>
+    </div>`;
+  }).join('') : '<div style="font-size:12px;color:var(--g4);padding:6px 0;">暂未上传</div>';
+  el.innerHTML = `
+    <div style="font-size:13px;font-weight:500;margin-bottom:8px;color:var(--g5);">📋 营业执照 & 食品经营许可</div>
+    ${renderCertMini(certs)}
+    <div style="font-size:13px;font-weight:500;margin:10px 0 8px;color:var(--g5);">💚 员工健康证</div>
+    ${renderCertMini(health)}
+    <div style="font-size:11px;color:var(--g4);margin-top:8px;text-align:center;">以上为顾客扫码后看到的内容（点击图片可预览）</div>
+  `;
+}
+
 function renderQR() {
   if(!currentUser) return;
   const token = currentUser.qrToken || currentUser.id;
@@ -1726,6 +1938,59 @@ function renderQR() {
   document.getElementById('qr-nm').textContent = currentUser.name;
   document.getElementById('qr-url').textContent = url;
   QRCode.toCanvas(document.getElementById('qr-cv'), url, { width:200, color:{ dark:'#0A7C59', light:'#ffffff' }});
+}
+
+function dlQRPrint() {
+  if(!currentUser) return;
+  const token = currentUser.qrToken || currentUser.id;
+  const url = window.location.href.split('?')[0] + '?pub=' + token;
+  const canvas = document.createElement('canvas');
+  canvas.width = 794; canvas.height = 1123; // A4 96dpi
+  const ctx = canvas.getContext('2d');
+  // 白底
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,794,1123);
+  // 绿色顶部装饰
+  ctx.fillStyle = '#0A7C59'; ctx.fillRect(0,0,794,8);
+  ctx.fillStyle = '#0A7C59'; ctx.fillRect(0,1115,794,8);
+  // 标题
+  ctx.fillStyle = '#0A7C59';
+  ctx.font = 'bold 28px PingFang SC,Microsoft YaHei,Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('🛡️ 食安链 · 食品安全公示', 397, 80);
+  // 副标题
+  ctx.fillStyle = '#888';
+  ctx.font = '16px PingFang SC,Microsoft YaHei,Arial';
+  ctx.fillText('扫描下方二维码查看食品安全信息', 397, 115);
+  // 二维码
+  const qrCanvas = document.createElement('canvas');
+  QRCode.toCanvas(qrCanvas, url, { width:320, margin:2, color:{dark:'#0A7C59',light:'#ffffff'} }, () => {
+    ctx.drawImage(qrCanvas, 237, 145, 320, 320);
+    // 店铺名
+    ctx.fillStyle = '#222';
+    ctx.font = 'bold 32px PingFang SC,Microsoft YaHei,Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(currentUser.name, 397, 520);
+    // 绿色分割线
+    ctx.strokeStyle = '#E6F4F1'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(60,545); ctx.lineTo(734,545); ctx.stroke();
+    // 联系人和电话
+    ctx.fillStyle = '#555'; ctx.font = '18px PingFang SC,Microsoft YaHei,Arial';
+    ctx.fillText('食品安全负责人：' + (currentUser.contact||currentUser.name) + '　电话：' + (currentUser.phone||'—'), 397, 590);
+    // 底部说明
+    ctx.fillStyle = '#0A7C59';
+    ctx.font = 'bold 20px PingFang SC,Microsoft YaHei,Arial';
+    ctx.fillText('本店已接入食安链食品安全管理平台', 397, 650);
+    ctx.fillStyle = '#888'; ctx.font = '14px PingFang SC,Microsoft YaHei,Arial';
+    ctx.fillText('· 营业证照在线可查  · 进货台账实时更新  · 检测报告可追溯 ·', 397, 685);
+    // 绿色边框
+    ctx.strokeStyle = '#0A7C59'; ctx.lineWidth = 3;
+    ctx.strokeRect(20,20,754,1083);
+    // 下载
+    const a = document.createElement('a');
+    a.download = currentUser.name + '_食安链二维码.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+  });
 }
 
 function dlQR() {
@@ -1801,34 +2066,99 @@ function rejectOrder(id) {
   const o = db.orders.find(x => x.id === id);
   if(o) { o.status = 'reject'; saveDB(db); renderSupOrders(); showToast('已拒绝'); }
 }
+let pendingShipOrderId = null;
+let soReportMode = 'select';
+
 function shipOrder(id) {
   const o = db.orders.find(x => x.id === id);
   if(!o) return;
+  pendingShipOrderId = id;
+  document.getElementById('ship-order-info').innerHTML = `
+    <div class="alert alert-ok" style="margin-bottom:0;">
+      <i class="ti ti-file-invoice"></i>
+      <div><b>${o.name}</b> · ${o.qty}<br>
+      <span style="font-size:12px;">商户：${getMerName(o.merId)} · 期望到货：${o.date||'—'}</span></div>
+    </div>`;
+  document.getElementById('so-qty').value = o.qty;
+  document.getElementById('so-date').value = today();
+  soReportMode = 'select';
+  document.getElementById('so-rpt-select-area').style.display = '';
+  document.getElementById('so-rpt-upload-area').style.display = 'none';
+  // 填充可选报告
+  const myReports = [...(db.supReports||[]).filter(r=>r.supId===currentUser.id),
+    ...(db.supMfrs||[]).filter(x=>x.supId===currentUser.id).flatMap(x=>db.reports.filter(r=>r.mfrId===x.mfrId))];
+  const sel = document.getElementById('so-report-ref');
+  sel.innerHTML = '<option value="">-- 暂不附报告 --</option>' + myReports.map(r=>`<option value="${r.id}">${r.name}（${r.date||'—'}）</option>`).join('');
+  showModal('ship-order-modal');
+}
+
+function toggleSoReportMode(mode) {
+  soReportMode = mode;
+  document.getElementById('so-rpt-select-area').style.display = mode==='select'?'':'none';
+  document.getElementById('so-rpt-upload-area').style.display = mode==='upload'?'':'none';
+  document.getElementById('so-rpt-btn-sel').style.cssText = mode==='select'?'border-color:var(--gr);color:var(--gr);':'';
+  document.getElementById('so-rpt-btn-upl').style.cssText = mode==='upload'?'border-color:var(--gr);color:var(--gr);':'';
+}
+
+function doShipOrderConfirm() {
+  if(!pendingShipOrderId) return;
+  const o = db.orders.find(x => x.id === pendingShipOrderId);
+  if(!o) return;
   o.status = 'shipped';
-  // 自动生成发货记录
+  let reportRef='', reportUrl='', reportText='';
+  if(soReportMode==='select') {
+    reportRef = document.getElementById('so-report-ref')?.value||'';
+    if(reportRef) { const r=db.reports.find(x=>x.id===reportRef)||db.supReports?.find(x=>x.id===reportRef); reportText=r?'已附：'+r.name:''; }
+  } else {
+    const rn=document.getElementById('so-report-name');
+    reportUrl=rn?.dataset?.dataUrl||''; reportText=rn?.dataset?.file?'已附：'+rn.dataset.file:'';
+  }
+  const qty = document.getElementById('so-qty').value.trim() || o.qty;
+  const date = document.getElementById('so-date').value;
   db.shipments.push({ id:uid(), supId:currentUser.id, supName:currentUser.name, merId:o.merId,
-    name:o.name, qty:o.qty, date:today(), report:'', reportUrl:'', status:'pending', ts:Date.now() });
+    name:o.name, qty, date, report:reportText, reportRef, reportUrl, status:'pending', ts:Date.now() });
   saveDB(db);
+  hideModal('ship-order-modal');
   renderSupOrders();
   showToast('已标记发货，商户收到待收货通知');
+  pendingShipOrderId = null;
 }
 
 function renderSupShipments() {
   if(!currentUser) return;
-  const items = db.shipments.filter(s => s.supId === currentUser.id).sort((a,b) => b.ts - a.ts);
+  const ships = db.shipments.filter(s => s.supId === currentUser.id).map(s=>({...s,_dir:'out'}));
+  const receives = (db.supReceives||[]).filter(r => r.supId === currentUser.id).map(r=>({...r,_dir:'in'}));
+  const all = [...ships,...receives].sort((a,b) => b.ts - a.ts);
   const el = document.getElementById('sup-ship-list');
-  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-truck-off"></i>暂无发货记录</div>'; return; }
-  el.innerHTML = items.map(s => `
-    <div class="item">
-      <div class="item-row">
-        <div>
-          <div class="item-title">${s.name}</div>
-          <div class="item-sub">收货方：${getMerName(s.merId)} · ${s.qty} · ${s.date||'—'}</div>
-          ${s.report ? `<div class="item-sub" style="color:var(--gr);">已附报告：${s.report}</div>` : ''}
+  if(!all.length) { el.innerHTML = '<div class="empty"><i class="ti ti-truck-off"></i>暂无收发货记录</div>'; return; }
+  el.innerHTML = all.map(item => {
+    if(item._dir === 'out') {
+      const s=item;
+      const hasR = s.report||s.reportRef||s.reportUrl;
+      return `<div class="item" style="border-left:3px solid var(--bl);">
+        <div class="item-row">
+          <div><div class="item-title">${s.name} <span class="tag tag-blue" style="font-size:10px;">发货</span></div>
+          <div class="item-sub">→ ${getMerName(s.merId)} · ${s.qty} · ${s.date||'—'}</div></div>
+          <span class="tag ${s.status==='pending'?'tag-pending':'tag-pass'}">${s.status==='pending'?'待签收':'已签收'}</span>
         </div>
-        <span class="tag ${s.status==='pending'?'tag-pending':'tag-pass'}">${s.status==='pending'?'待收货':'已收货'}</span>
-      </div>
-    </div>`).join('');
+        <div class="item-actions">
+          ${hasR?`<button class="btn btn-s btn-sm" onclick="viewReport('${s.id}')"><i class="ti ti-file-search"></i> 查看报告</button>`:''}
+        </div>
+      </div>`;
+    } else {
+      const r=item;
+      const hasR = r.reportRef||r.reportUrl;
+      return `<div class="item" style="border-left:3px solid var(--gr);">
+        <div class="item-row">
+          <div><div class="item-title">${r.prod} <span class="tag tag-pass" style="font-size:10px;">收货</span></div>
+          <div class="item-sub">← ${r.from} · ${r.qty||'—'} · ${r.date||'—'}</div></div>
+        </div>
+        <div class="item-actions">
+          ${hasR?`<button class="btn btn-s btn-sm" onclick="viewFileUrl('${r.reportUrl||''}','报告')"><i class="ti ti-file-search"></i> 查看报告</button>`:''}
+        </div>
+      </div>`;
+    }
+  }).join('');
 }
 
 function addShipNotice() {
@@ -1910,6 +2240,29 @@ function renderSupProducts() {
     </div>`).join('');
 }
 
+function populateProdSourceSelect() {
+  if(!currentUser) return;
+  const sel = document.getElementById('prod-source-ref');
+  if(!sel) return;
+  const mfrs = (db.supMfrs||[]).filter(x=>x.supId===currentUser.id);
+  const peers = (db.supPeers||[]).filter(x=>x.supId===currentUser.id);
+  sel.innerHTML = '<option value="">-- 选择关联的供货商或厂家 --</option>' +
+    mfrs.map(x=>`<option value="mfr:${x.mfrId}">${x.mfrName}（厂家）</option>`).join('') +
+    peers.map(x=>`<option value="sup:${x.peerId}">${x.peerName}（供应商）</option>`).join('');
+}
+
+function onProdSourceChange() {
+  const val = document.getElementById('prod-source-ref')?.value||'';
+  const sel = document.getElementById('prod-report-ref');
+  if(!sel) return;
+  if(!val) { sel.innerHTML='<option value="">-- 先选择供货商/厂家 --</option>'; return; }
+  const [type, id] = val.split(':');
+  let reports = [];
+  if(type==='mfr') reports = db.reports.filter(r=>r.mfrId===id);
+  else reports = (db.supReports||[]).filter(r=>r.supId===id);
+  sel.innerHTML = '<option value="">-- 暂不关联 --</option>' + reports.map(r=>`<option value="${r.id}">${r.name}（${r.date||'—'}）</option>`).join('');
+}
+
 function addProduct() {
   const name = document.getElementById('prod-name').value.trim();
   if(!name) return showErr('prod-msg','请输入产品名称');
@@ -1958,6 +2311,53 @@ function delSupPeer(id) {
   saveDB(db);
   renderSupMfrs();
   showToast('已移除');
+}
+
+// 供应商关联管理 tab
+let supLinkTabMode = 'mfr';
+function switchSupLinkTab(mode) {
+  supLinkTabMode = mode;
+  ['mfr','sup','mer'].forEach(m => {
+    const btn = document.getElementById('slink-tab-'+m);
+    if(btn) btn.className = 'btn btn-sm ' + (mode===m?'btn-p':'btn-s');
+  });
+  document.getElementById('sup-link-search').value = '';
+  renderSupLinkList();
+}
+
+function renderSupLinkList() {
+  if(!currentUser) return;
+  const kw = (document.getElementById('sup-link-search')?.value||'').toLowerCase();
+  const el = document.getElementById('sup-mfrs-list');
+  if(!el) return;
+  if(supLinkTabMode === 'mfr') {
+    const linkedIds = (db.supMfrs||[]).filter(x=>x.supId===currentUser.id).map(x=>x.mfrId);
+    let list = db.users.filter(u=>u.role==='mfr'&&u.status==='pass');
+    if(kw) list=list.filter(u=>u.name.toLowerCase().includes(kw));
+    el.innerHTML = (list.length?list.map(u=>{
+      const il=linkedIds.includes(u.id);
+      return `<div class="item"><div class="item-row"><div><div class="item-title">${u.name}</div><div class="item-sub">生产厂家 · ${u.addr||''}</div></div>
+        <button class="btn ${il?'btn-s':'btn-p'} btn-sm" onclick="linkSupMfr('${u.id}','${u.name}')" ${il?'disabled':''}>${il?'已关联':'关联'}</button>
+      </div></div>`;}):'<div class="empty"><i class="ti ti-building-off"></i>暂无已认证厂家</div>') + (linkedIds.length?'<div class="divider"></div><div style="font-size:12px;color:var(--g4);padding:4px 0;">已关联：'+(db.supMfrs||[]).filter(x=>x.supId===currentUser.id).map(x=>x.mfrName).join('、')+'</div>':'');
+  } else if(supLinkTabMode === 'sup') {
+    const linkedIds = (db.supPeers||[]).filter(x=>x.supId===currentUser.id).map(x=>x.peerId);
+    let list = db.users.filter(u=>u.role==='sup'&&u.status==='pass'&&u.id!==currentUser.id);
+    if(kw) list=list.filter(u=>u.name.toLowerCase().includes(kw));
+    el.innerHTML = list.length?list.map(u=>{
+      const il=linkedIds.includes(u.id);
+      return `<div class="item"><div class="item-row"><div><div class="item-title">${u.name}</div><div class="item-sub">供应商 · ${u.addr||''}</div></div>
+        <button class="btn ${il?'btn-s':'btn-p'} btn-sm" onclick="linkSupPeer('${u.id}','${u.name}')" ${il?'disabled':''}>${il?'已关联':'关联'}</button>
+      </div></div>`;}).join(''):'<div class="empty"><i class="ti ti-truck-off"></i>暂无其他供应商</div>';
+  } else {
+    const linkedMerIds = db.merSuppliers.filter(s=>s.supId===currentUser.id).map(s=>s.merId);
+    let list = db.users.filter(u=>u.role==='mer'&&u.status==='pass');
+    if(kw) list=list.filter(u=>u.name.toLowerCase().includes(kw));
+    el.innerHTML = list.length?list.map(u=>{
+      const il=linkedMerIds.includes(u.id);
+      return `<div class="item"><div class="item-row"><div><div class="item-title">${u.name}</div><div class="item-sub">商户 · ${u.addr||''}</div></div>
+        <span class="tag ${il?'tag-pass':'tag-grey'}">${il?'已关联':'未关联'}</span>
+      </div></div>`;}).join(''):'<div class="empty"><i class="ti ti-building-store"></i>暂无商户</div>';
+  }
 }
 
 let link2TabMode = 'mfr';
@@ -2040,6 +2440,120 @@ function renderSupMers() {
   }).join('');
 }
 
+// ==================== 供应商检测报告 ====================
+function renderSupReports() {
+  if(!currentUser) return;
+  const kw = (document.getElementById('sup-rpt-search')?.value||'').toLowerCase();
+  const cat = document.getElementById('sup-rpt-cat')?.value||'';
+  let items = (db.supReports||[]).filter(r => r.supId === currentUser.id);
+  if(cat) items = items.filter(r => r.cat === cat);
+  if(kw) items = items.filter(r => r.name.toLowerCase().includes(kw));
+  items.sort((a,b) => b.ts - a.ts);
+  const el = document.getElementById('sup-reports-list');
+  if(!el) return;
+  if(!items.length) { el.innerHTML = '<div class="empty"><i class="ti ti-file-off"></i>暂无检测报告</div>'; return; }
+  const resMap = {pass:'合格',fail:'不合格',pending:'待出结果'};
+  const resTag = {pass:'tag-pass',fail:'tag-reject',pending:'tag-pending'};
+  el.innerHTML = items.map(r => `
+    <div class="item">
+      <div class="item-row">
+        <div>
+          <div class="item-title">${r.name}</div>
+          <div class="item-sub">${r.cat||'—'} · ${r.org||'—'} · ${r.date||'—'}</div>
+          ${r.expire ? `<div class="item-sub">有效期至：${r.expire}</div>` : ''}
+        </div>
+        <span class="tag ${resTag[r.result]||'tag-grey'}">${resMap[r.result]||r.result}</span>
+      </div>
+      <div class="item-actions">
+        ${r.fileUrl&&r.fileUrl.startsWith('data:') ? `<button class="btn btn-s btn-sm" onclick="viewFileUrl('${r.fileUrl}','${r.name}')"><i class="ti ti-file-search"></i> 查看</button>` : ''}
+        <button class="btn btn-s btn-sm" onclick="delSupReport('${r.id}')"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function addSupReport() {
+  const name = document.getElementById('srpt-name').value.trim();
+  if(!name) return showErr('srpt-msg','请输入产品名称');
+  clearErr('srpt-msg');
+  if(!db.supReports) db.supReports = [];
+  const fn = document.getElementById('srpt-file-name');
+  db.supReports.push({
+    id:uid(), supId:currentUser.id, name, cat:document.getElementById('srpt-cat').value,
+    org:document.getElementById('srpt-org').value.trim(), no:document.getElementById('srpt-no').value.trim(),
+    date:document.getElementById('srpt-date').value, expire:document.getElementById('srpt-expire').value,
+    result:document.getElementById('srpt-result').value,
+    fileUrl: fn?.dataset?.dataUrl||fn?.dataset?.file||'', ts:Date.now()
+  });
+  saveDB(db);
+  hideModal('add-sup-report-modal');
+  renderSupReports();
+  showToast('报告已上传');
+}
+
+function delSupReport(id) {
+  db.supReports = (db.supReports||[]).filter(r => r.id !== id);
+  saveDB(db); renderSupReports(); showToast('已删除');
+}
+
+let supBatchFiles = [];
+function handleBatchSupReportSelect(input) {
+  supBatchFiles = Array.from(input.files);
+  const el = document.getElementById('srpt-batch-list');
+  el.innerHTML = supBatchFiles.map(f=>`<div style="padding:6px 0;border-bottom:1px solid var(--g2);font-size:13px;display:flex;align-items:center;gap:6px;"><i class="ti ti-file-text" style="color:var(--gr);"></i>${f.name}</div>`).join('');
+}
+
+function doBatchSupUpload() {
+  if(!supBatchFiles.length) return showToast('请先选择文件');
+  if(!db.supReports) db.supReports = [];
+  const cat = document.getElementById('srpt-batch-cat')?.value||'其他';
+  let cnt = 0;
+  const readNext = (i) => {
+    if(i >= supBatchFiles.length) {
+      saveDB(db); hideModal('batch-sup-report-modal'); renderSupReports();
+      showToast(`批量上传成功，共 ${cnt} 份报告`);
+      supBatchFiles = []; document.getElementById('srpt-batch-list').innerHTML = '';
+      return;
+    }
+    const f = supBatchFiles[i];
+    const reader = new FileReader();
+    reader.onload = e => {
+      db.supReports.push({ id:uid(), supId:currentUser.id, name:f.name.replace(/\.[^.]+$/,''),
+        cat, org:'', no:'', date:today(), expire:'', result:'pass', fileUrl:e.target.result, ts:Date.now() });
+      cnt++; readNext(i+1);
+    };
+    reader.readAsDataURL(f);
+  };
+  readNext(0);
+}
+
+// 收货记录
+function addSupReceive() {
+  const from = document.getElementById('sr-from').value.trim();
+  const prod = document.getElementById('sr-prod').value.trim();
+  if(!from) return showErr('sr-msg','请填写发货方');
+  if(!prod) return showErr('sr-msg','请填写产品名称');
+  clearErr('sr-msg');
+  if(!db.supReceives) db.supReceives = [];
+  const rn = document.getElementById('sr-report-name');
+  db.supReceives.push({
+    id:uid(), supId:currentUser.id, from, prod,
+    qty:document.getElementById('sr-qty').value.trim(),
+    date:document.getElementById('sr-date').value||today(),
+    reportRef:document.getElementById('sr-report-ref')?.value||'',
+    reportUrl:rn?.dataset?.dataUrl||'', ts:Date.now()
+  });
+  saveDB(db); hideModal('add-sup-receive-modal'); renderSupShipments(); showToast('收货记录已添加');
+}
+
+function filterSrFrom(kw) {
+  const dd = document.getElementById('sr-from-dropdown');
+  if(!kw) { dd.style.display='none'; return; }
+  const all = db.users.filter(u=>(u.role==='mfr'||u.role==='sup')&&u.status==='pass'&&u.name.toLowerCase().includes(kw.toLowerCase()));
+  if(!all.length) { dd.style.display='none'; return; }
+  dd.style.display='block';
+  dd.innerHTML=all.map(u=>`<div onclick="document.getElementById('sr-from').value='${u.name.replace(/'/g,"\\'")}';this.parentNode.style.display='none';" style="padding:10px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--g2);">${u.name}<span style="font-size:11px;color:var(--g4);margin-left:6px;">${u.role==='mfr'?'厂家':'供应商'}</span></div>`).join('');
+}
+
 // ==================== 厂家端 ====================
 function renderMfrReports() {
   if(!currentUser) return;
@@ -2117,8 +2631,8 @@ function renderMfrShip() {
       <div class="item-row">
         <div>
           <div class="item-title">${s.prod}</div>
-          <div class="item-sub">收货方：${s.to} · 批次：${s.batch||'—'} · 数量：${s.qty}</div>
-          <div class="item-sub">发货日期：${s.date||'—'}</div>
+          <div class="item-sub">收货方：${s.to} · 数量：${s.qty}</div>
+          <div class="item-sub">发货：${s.date||'—'}${s.produceDate?' · 生产：'+s.produceDate:''} · 批次：${s.batch||'—'}</div>
           ${s.reportRef||s.reportUrl ? `<div class="item-sub" style="color:var(--gr);"><i class="ti ti-file-check"></i> 已附质检报告</div>` : ''}
         </div>
       </div>
@@ -2237,8 +2751,9 @@ function addMfrShip() {
         fileUrl: msReportUrl, ts:Date.now() });
     }
   }
+  const msProdDate = document.getElementById('ms-produce-date')?.value||'';
   db.mfrShipments.push({ id:uid(), mfrId:currentUser.id, to, prod,
-    batch:document.getElementById('ms-batch').value.trim(), qty:document.getElementById('ms-qty').value.trim(),
+    produceDate:msProdDate, batch:document.getElementById('ms-batch').value.trim(), qty:document.getElementById('ms-qty').value.trim(),
     date:document.getElementById('ms-date').value, reportRef:msReportRef, reportUrl:msReportUrl, ts:Date.now() });
   saveDB(db);
   hideModal('add-mfr-ship-modal');
@@ -2494,6 +3009,16 @@ window.showModal = function(id) {
   _origShowModal(id);
   if(id === 'add-ship-modal') { populateShipMerSelect(); populateShipReportSelect(); }
   if(id === 'add-mfr-ship-modal') populateMsReportSelect();
+  if(id === 'add-product-modal') populateProdSourceSelect();
+  if(id === 'add-sup-receive-modal') {
+    const sel = document.getElementById('sr-report-ref');
+    if(sel && currentUser) {
+      const r1 = (db.supReports||[]).filter(x=>x.supId===currentUser.id);
+      const mfrIds = (db.supMfrs||[]).filter(x=>x.supId===currentUser.id).map(x=>x.mfrId);
+      const r2 = db.reports.filter(r=>mfrIds.includes(r.mfrId));
+      sel.innerHTML = '<option value="">-- 暂无 --</option>'+[...r1,...r2].map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+    }
+  }
   if(id === 'add-order-modal') populateSupSelect();
   if(id === 'link-sup-modal') renderLinkSupList();
   if(id === 'link-mfr-modal') renderLinkMfrList();
